@@ -9,6 +9,7 @@ import ipaddress
 IP = '127.0.0.1'
 buffer_size = 10
 window_filled = 0
+lock = threading.Lock()
 
 def getMessage(input_list):
     message = ""
@@ -41,11 +42,13 @@ class Node:
 
             # Ack
             if(lines[0] == 'ack'):
+                lock.acquire()
                 print("ack packet# " + lines[1])
                 window_filled -= 1
                 self.sending_buffer[int(lines[1]) % buffer_size] = None
                 print(self.sending_buffer)
                 print('Acked- window_unfilled', window_filled)
+                lock.release()
             # Message
             else:
                 seqNum = lines[0]
@@ -94,12 +97,14 @@ class Node:
                 # Send message to peer_port
                 if(window_filled < self.window_size):
                     # Insert packet into buffer
+                    lock.acquire()
                     self.sending_buffer[num % buffer_size] = message[num]
                     print(self.sending_buffer)
                     window_filled += 1
                     print('Window_filled', window_filled)
-                    node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                    lock.release()
                     num += 1
+                    node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
                 elif(self.window_size == 5):
                     print('Cannot send yet')
                 else:
