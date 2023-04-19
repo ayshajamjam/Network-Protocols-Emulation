@@ -8,6 +8,7 @@ import ipaddress
 
 IP = '127.0.0.1'
 buffer_size = 10
+window_filled = 0
 
 def getMessage(input_list):
     message = ""
@@ -25,6 +26,8 @@ class Node:
         self.sending_buffer = [None] * buffer_size
 
     def nodeListen(self):
+
+        global window_filled
         
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
@@ -39,8 +42,10 @@ class Node:
             # Ack
             if(lines[0] == 'ack'):
                 print("ack packet# " + lines[1])
+                window_filled -= 1
                 self.sending_buffer[int(lines[1]) % buffer_size] = None
                 print(self.sending_buffer)
+                print('Acked- window_unfilled', window_filled)
             # Message
             else:
                 seqNum = lines[0]
@@ -53,6 +58,9 @@ class Node:
 
 
     def nodeSend(self):
+
+        global window_filled
+
         # Create UDP socket
         node_send_socket = socket(AF_INET, SOCK_DGRAM)
 
@@ -77,17 +85,22 @@ class Node:
             # Retrieve message from input
             message = getMessage(input_list)
 
-            # Construct packets
+            # Construct packets, send
             print(self.sending_buffer)
-            for num, char in enumerate(message):
-                packet = str(num) + '\t' + char
+            num = 0
+            while num < len(message):
+                packet = str(num) + '\t' + message[num]
                 
-                # Insert packet into buffer
-                self.sending_buffer[num % buffer_size] = packet
-                print(self.sending_buffer)
-
-                # print(packet)
-                num += 1
-
                 # Send message to peer_port
-                node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                if(window_filled < self.window_size):
+                    # Insert packet into buffer
+                    self.sending_buffer[num % buffer_size] = message[num]
+                    print(self.sending_buffer)
+                    window_filled += 1
+                    print('Window_filled', window_filled)
+                    node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                    num += 1
+                elif(self.window_size == 5):
+                    print('Cannot send yet')
+                else:
+                    num += 1
