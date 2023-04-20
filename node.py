@@ -100,7 +100,6 @@ class Node:
             message = getMessage(input_list)
 
             # Construct packets, send
-            # print(self.sending_buffer)
             print(test)
             num = 0
             while num < len(message):
