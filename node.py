@@ -11,6 +11,9 @@ buffer_size = 10
 window_filled = 0
 lock = threading.Lock()
 
+acked = {}
+start_time = 0
+
 def getMessage(input_list):
     message = ""
     for i in range(1, len(input_list)):
@@ -29,6 +32,7 @@ class Node:
     def nodeListen(self):
 
         global window_filled
+        global acked
         
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
@@ -42,19 +46,22 @@ class Node:
 
             # Ack
             if(lines[0] == 'ack'):
+                seqNum = lines[1]
+
+                print('Stop -- ' + str(seqNum) + ' [' + str(time.time()) + ']')
                 lock.acquire()
-                print("ack packet# " + lines[1])
+                acked[int(seqNum)] = 1
                 window_filled -= 1
-                self.sending_buffer[int(lines[1]) % buffer_size] = None
+                self.sending_buffer[int(seqNum) % buffer_size] = None
+                print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
                 print(self.sending_buffer)
-                print('Acked- window_unfilled', window_filled)
                 lock.release()
             # Message
             else:
                 seqNum = lines[0]
                 data = lines[1]
 
-                print(data)
+                print(('[' + str(start_time) + '] packet: {} content: {} received').format(seqNum, data))
 
                 ack = 'ack' + '\t' + seqNum
                 node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
@@ -63,6 +70,7 @@ class Node:
     def nodeSend(self):
 
         global window_filled
+        global start_time
 
         # Create UDP socket
         node_send_socket = socket(AF_INET, SOCK_DGRAM)
@@ -101,10 +109,11 @@ class Node:
                     self.sending_buffer[num % buffer_size] = message[num]
                     print(self.sending_buffer)
                     window_filled += 1
-                    print('Window_filled', window_filled)
                     lock.release()
-                    num += 1
                     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                    start_time = time.time()
+                    print(('Start -- ' + str(num) + ' [' + str(start_time) + '] packet: {} content: {} sent').format(num, message[num]))
+                    num += 1
                 elif(self.window_size == 5):
                     print('Cannot send yet')
                 else:
