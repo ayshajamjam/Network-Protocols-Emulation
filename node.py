@@ -46,15 +46,14 @@ class Node:
 
             # Ack
             if(lines[0] == 'ack'):
-                seqNum = lines[1]
-
                 print('Stop -- ' + str(seqNum) + ' [' + str(time.time()) + ']')
+                seqNum = lines[1]
                 lock.acquire()
                 acked[int(seqNum)] = 1
                 window_filled -= 1
                 self.sending_buffer[int(seqNum) % buffer_size] = None
-                print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
                 print(self.sending_buffer)
+                print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
                 lock.release()
             # Message
             else:
@@ -106,7 +105,7 @@ class Node:
                 if(window_filled < self.window_size):
                     # Insert packet into buffer
                     lock.acquire()
-                    self.sending_buffer[num % buffer_size] = message[num]
+                    self.sending_buffer[num % buffer_size] = num
                     print(self.sending_buffer)
                     window_filled += 1
                     lock.release()
