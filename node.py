@@ -64,7 +64,9 @@ class Node:
 
                 # Sender: determine whether or not to discard ack (simulation)
                 if(self.drop_method == '-d'):   # deterministic
-                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                    # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                    if(seqNum == self.drop_value):
+                        print("Dropping an ack")
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
                     else:
@@ -72,7 +74,7 @@ class Node:
                         lock.acquire()
                         # Move the window to most recent ack seq
                         # self.window_start = seqNum
-                        self.window_start = (self.window_start + 1) % buffer_size
+                        self.window_start = (seqNum + 1) % buffer_size
                         self.sending_buffer[int(seqNum) % buffer_size] = None
                         print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
                         print(self.sending_buffer)
