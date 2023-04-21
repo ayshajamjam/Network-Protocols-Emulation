@@ -67,17 +67,17 @@ class Node:
                     else:
                         self.test[seqNum] = 'ACKED'
                         print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
-                # elif(self.drop_method == '-p'): # probabilistic
-                #     random_num = float(randint(1, 100)/100)
-                #     if(random_num <= self.drop_value):
-                #         self.test[seqNum] = 'X'
-                #         self.dropped_count += 1
-                #     else:
-                #         self.test[seqNum] = 'ACKED'
-                #         print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
+                elif(self.drop_method == '-p'): # probabilistic
+                    random_num = float(randint(1, 100)/100)
+                    if(random_num <= self.drop_value):
+                        self.test[seqNum] = 'X'
+                        self.dropped_count += 1
+                    else:
+                        self.test[seqNum] = 'ACKED'
+                        print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
                 
                 print(self.test)
-                print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
 
                 # print('Stop -- ' + str(seqNum) + ' [' + str(time.time()) + ']')
                 lock.acquire()
