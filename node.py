@@ -39,10 +39,15 @@ class Node:
         global window_filled
         global acked
         
+        global start_time
+
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
         node_listen_socket.bind(('', self.self_port))
 
+        if(start_time != 0 and time.time() - start_time > 0.5):
+            print("FIRST PACKET (in window) SENT: ", start_time)
+        
         while True:
             
             self.packets_received += 1
@@ -59,7 +64,7 @@ class Node:
                 seqNum = int(lines[1])
 
 
-                # # Sender: determine whether or not to discard packet (simulation)
+                # Sender: determine whether or not to discard ack (simulation)
                 if(self.drop_method == '-d'):   # deterministic
                     if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                         self.test[seqNum] = 'X'
@@ -113,7 +118,6 @@ class Node:
                 ack = 'ack' + '\t' + str(seqNum)
                 node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
 
-
     def nodeSend(self):
 
         global window_filled
@@ -125,9 +129,6 @@ class Node:
         # Multithreading
         listen = threading.Thread(target=self.nodeListen)
         listen.start()
-
-        test = ['O'] * 10
-        dropped_count = 0
 
         while True:
 
