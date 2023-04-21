@@ -65,8 +65,8 @@ class Node:
 
                 # Sender: determine whether or not to discard ack (simulation)
                 if(self.drop_method == '-d'):   # deterministic
-                    # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                    if(seqNum == 2 or seqNum == 3 or seqNum == 6):
+                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                    # if(seqNum == 2 or seqNum == 3 or seqNum == 6):    # for testing
                         lock.acquire()
                         print("Dropping an ack for packet: ", seqNum)
                         self.test[seqNum] = 'X'
