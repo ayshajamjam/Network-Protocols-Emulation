@@ -67,12 +67,11 @@ class Node:
                 if(self.drop_method == '-d'):   # deterministic
                     if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                     # if(seqNum == 2 or seqNum == 3 or seqNum == 6):    # for testing
-                        lock.acquire()
-                        print("Dropping an ack for packet: ", seqNum)
+                        print("***Dropping an ack for packet: ", seqNum, "***")
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
+                        print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
                     elif(self.last_acked_packet == seqNum):
-                        lock.acquire()
                         print(('[' + str(time_received) + '] ACK packet: {} discarded').format(seqNum))
                     else:
                         # Got ack for packet
@@ -89,12 +88,10 @@ class Node:
                             self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
                             self.last_acked_packet += 1
                         print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
-                        print(self.sending_buffer)
-                
-                print(self.test)
-                print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
-                print('\n')
-                lock.release()
+                        # print(self.sending_buffer)
+                        lock.release()
+
+                # print(self.test)
 
             # Receiver got message
             else:
@@ -105,20 +102,18 @@ class Node:
                 if(self.drop_method == '-d'):   # deterministic
                     # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                     if(seqNum == 2):    # for testing
-                        lock.acquire()
-                        print("Dropping packet: ", seqNum)
+                        print("***Dropping packet: ", seqNum, "***")
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
+                        print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
                     elif(self.last_acked_packet != seqNum - 1):
-                        lock.acquire()
                         print(('[' + str(time.time()) + '] packet: {} content: {} discarded').format(str(seqNum), data))
-                        print("Last acked packet: ", self.last_acked_packet)
-                        print("Still need: ", self.last_acked_packet + 1)
+                        # print("Last acked packet: ", self.last_acked_packet)
+                        # print("Still need: ", self.last_acked_packet + 1)
                         ack = 'ack' + '\t' + str(self.last_acked_packet)
                         node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
                         print(('[' + str(time.time()) + '] ACK packet: {} sent, expecting packet {}').format(str(self.last_acked_packet), str(self.last_acked_packet + 1)))
                     else:
-                        lock.acquire()
                         ack = 'ack' + '\t' + str(seqNum)
                         self.test[seqNum] = data
                         self.last_acked_packet += 1
@@ -126,10 +121,7 @@ class Node:
                         node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
                         print(('[' + str(time.time()) + '] ACK packet: {} sent, expecting packet {}').format(str(self.last_acked_packet), str(self.last_acked_packet + 1)))
 
-                print(self.test)
-                print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
-                print('\n')
-                lock.release()
+                # print(self.test)
 
     def nodeSend(self):
 
@@ -161,32 +153,21 @@ class Node:
 
             num = 0
             while num < len(message):
-                # # This treats final characters (msg = 'a' or msg='hello' and 'o' packet is lost)
-                # current_time = float(time.time())
-                # time_elapsed = float(start_time) - current_time
-                # print("Start: ", start_time)
-                # print("Current: ", current_time)
-                # print("Elapsed: ", time_elapsed)
-                # if(time_elapsed > 0.5):
-                #     print("TIMEOUT")
-
-                lock.acquire()
                 packet = str(num) + '\t' + message[num]
                 # Send message to peer_port
                 if(self.next_available_spot - self.window_start < self.window_size):
                     # Insert packet into buffer
-
+                    lock.acquire()
                     self.sending_buffer[num % buffer_size] = num
-                    print(self.sending_buffer)
+                    # print(self.sending_buffer)
                     self.next_available_spot = (self.next_available_spot + 1) % buffer_size
+                    lock.release()
                     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
                     start_time = float(time.time())
-                    print(('Start -- ' + str(num) + ' [' + str(start_time) + '] packet: {} content: {} sent').format(num, message[num]))
-                    
+                    print(('[' + str(start_time) + '] packet: {} content: {} sent').format(num, message[num]))
                     num += 1
                 elif(self.window_size == 5):
                     num = num
                     # print('Cannot send yet, waiting for ACK: ', self.last_acked_packet + 1)
                 else:
                     num += 1
-                lock.release()
