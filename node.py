@@ -91,22 +91,33 @@ class Node:
             else:
                 seqNum = int(lines[0])
                 data = lines[1]
-                ack = 'ack' + '\t' + str(seqNum)
 
                 # Receiver: determine whether or not to discard packet (simulation)
                 if(self.drop_method == '-d'):   # deterministic
-                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                    # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                    if(seqNum == 1):    # for testing
+                        lock.acquire()
+                        print("Dropping packet: ", seqNum)
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
+                    elif(self.last_acked_packet != seqNum - 1):
+                        lock.acquire()
+                        print("Last acked packet: ", self.last_acked_packet)
+                        print("Still need: ", self.last_acked_packet + 1)
+                        ack = 'ack' + '\t' + str(self.last_acked_packet)
+                        node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
                     else:
+                        lock.acquire()
+                        ack = 'ack' + '\t' + str(seqNum)
                         self.test[seqNum] = data
+                        self.last_acked_packet += 1
                         print(('[' + str(time.time()) + '] packet: {} content: {} received').format(str(seqNum), data))
+                        node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
 
                 print(self.test)
                 print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
-
-                # TODO: This needs to be moved to else statements
-                node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
+                print('\n')
+                lock.release()
 
     def nodeSend(self):
 
