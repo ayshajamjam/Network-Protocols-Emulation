@@ -88,6 +88,8 @@ class Node:
                             self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
                             self.last_acked_packet += 1
                         print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
+                        start_time = time.time()
+                        print(("-----RESTART[{}]----").format(start_time))
                         # print(self.sending_buffer)
                         lock.release()
 
@@ -163,8 +165,10 @@ class Node:
                     self.next_available_spot = (self.next_available_spot + 1) % buffer_size
                     lock.release()
                     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
-                    start_time = float(time.time())
-                    print(('[' + str(start_time) + '] packet: {} content: {} sent').format(num, message[num]))
+                    if(num == 0):
+                        start_time = float(time.time())
+                        print(("-----START[{}]----").format(start_time))
+                    print(('[' + str(time.time()) + '] packet: {} content: {} sent').format(num, message[num]))
                     num += 1
                 elif(self.window_size == 5):
                     num = num
