@@ -15,6 +15,9 @@ lock = threading.Lock()
 acked = {}
 start_time = 0
 
+test = ['O'] * 100
+dropped_count = 0
+
 def getMessage(input_list):
     message = ""
     for i in range(1, len(input_list)):
@@ -34,6 +37,9 @@ class Node:
 
         global window_filled
         global acked
+
+        global test
+        global dropped_count
         
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
@@ -47,8 +53,8 @@ class Node:
 
             # Ack
             if(lines[0] == 'ack'):
-                print('Stop -- ' + str(seqNum) + ' [' + str(time.time()) + ']')
                 seqNum = lines[1]
+                # print('Stop -- ' + str(seqNum) + ' [' + str(time.time()) + ']')
                 lock.acquire()
                 acked[int(seqNum)] = 1
                 window_filled -= 1
@@ -58,14 +64,33 @@ class Node:
                 lock.release()
             # Message
             else:
-                seqNum = lines[0]
+                seqNum = int(lines[0])
                 data = lines[1]
 
-                print(('[' + str(start_time) + '] packet: {} content: {} received').format(seqNum, data))
+                # Receiver: determine whether or not to discard packet
+                if(self.drop_method == '-d'):   # deterministic
+                    if((seqNum + 1) % self.drop_value == 0):
+                        test[seqNum] = 'X'
+                        dropped_count += 1
+                    else:
+                        test[seqNum] = data
+                        print(('[' + str(time.time()) + '] packet: {} content: {} received').format(str(seqNum), data))
+                elif(self.drop_method == '-p'): # probabilistic
+                    random_num = float(randint(1, 100)/100)
+                    if(random_num <= self.drop_value):
+                        test[seqNum] = 'X'
+                        dropped_count += 1
+                    else:
+                        test[seqNum] = data
+                        print(('[' + str(time.time()) + '] packet: {} content: {} received').format(str(seqNum), data))
+                
+                print(test)
+                print(("# Dropped packets / # received --- {}/{}: ").format(dropped_count, seqNum + 1))
 
-                ack = 'ack' + '\t' + seqNum
+                ack = 'ack' + '\t' + str(seqNum)
                 node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
 
+                print(test)
 
     def nodeSend(self):
 
@@ -99,49 +124,22 @@ class Node:
             # Retrieve message from input
             message = getMessage(input_list)
 
-            # Construct packets, send
-            print(test)
             num = 0
             while num < len(message):
                 packet = str(num) + '\t' + message[num]
-
-                if(self.drop_method == '-d'):
-                    if((num + 1) % self.drop_value == 0):
-                        test[num] = 'X'
-                        dropped_count += 1
-                    else:
-                        test[num] = message[num]
-                elif(self.drop_method == '-p'):
-                    random_num = float(randint(1, 100)/100)
-                    if(random_num <= self.drop_value):
-                        print(random_num)
-                        test[num] = 'X'
-                        dropped_count += 1
-                    else:
-                        test[num] = message[num]
-
-                num += 1
-            
-            print(test)
-            print("# Packets Dropped: ", dropped_count)
-            print("Message length: ", len(message))
-            print("% packets dropped: ", dropped_count/len(message))
-            dropped_count = 0
-            test = ['O'] * 10
-
-                # # Send message to peer_port
-                # if(window_filled < self.window_size):
-                #     # Insert packet into buffer
-                #     lock.acquire()
-                #     self.sending_buffer[num % buffer_size] = num
-                #     print(self.sending_buffer)
-                #     window_filled += 1
-                #     lock.release()
-                #     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
-                #     start_time = time.time()
-                #     print(('Start -- ' + str(num) + ' [' + str(start_time) + '] packet: {} content: {} sent').format(num, message[num]))
-                #     num += 1
-                # elif(self.window_size == 5):
-                #     print('Cannot send yet')
-                # else:
-                #     num += 1
+                # Send message to peer_port
+                if(window_filled < self.window_size):
+                    # Insert packet into buffer
+                    lock.acquire()
+                    self.sending_buffer[num % buffer_size] = num
+                    print(self.sending_buffer)
+                    window_filled += 1
+                    lock.release()
+                    node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                    start_time = time.time()
+                    print(('Start -- ' + str(num) + ' [' + str(start_time) + '] packet: {} content: {} sent').format(num, message[num]))
+                    num += 1
+                elif(self.window_size == 5):
+                    print('Cannot send yet')
+                else:
+                    num += 1
