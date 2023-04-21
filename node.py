@@ -15,9 +15,6 @@ lock = threading.Lock()
 acked = {}
 start_time = 0
 
-test = ['O'] * 100
-dropped_count = 0
-
 def getMessage(input_list):
     message = ""
     for i in range(1, len(input_list)):
@@ -33,64 +30,89 @@ class Node:
         self.drop_value = drop_value
         self.sending_buffer = [None] * buffer_size
 
+        self.test = test = ['O'] * 100
+        self.dropped_count = 0
+        self.packets_received = 0
+
     def nodeListen(self):
 
         global window_filled
         global acked
-
-        global test
-        global dropped_count
         
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
         node_listen_socket.bind(('', self.self_port))
 
         while True:
+            
+            self.packets_received += 1
 
             buffer, sender_address = node_listen_socket.recvfrom(4096)
             buffer = buffer.decode()
             lines = buffer.split('\t')
 
+            # TODO: bc we are using test temporarily, we can later move the 
+            # -d -p repeat functionality outside the if conditions
+
             # Ack
             if(lines[0] == 'ack'):
-                seqNum = lines[1]
+                seqNum = int(lines[1])
+
+
+                # # Sender: determine whether or not to discard packet (simulation)
+                if(self.drop_method == '-d'):   # deterministic
+                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                        self.test[seqNum] = 'X'
+                        self.dropped_count += 1
+                    else:
+                        self.test[seqNum] = 'ACKED'
+                        print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
+                # elif(self.drop_method == '-p'): # probabilistic
+                #     random_num = float(randint(1, 100)/100)
+                #     if(random_num <= self.drop_value):
+                #         self.test[seqNum] = 'X'
+                #         self.dropped_count += 1
+                #     else:
+                #         self.test[seqNum] = 'ACKED'
+                #         print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
+                
+                print(self.test)
+                print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+
                 # print('Stop -- ' + str(seqNum) + ' [' + str(time.time()) + ']')
                 lock.acquire()
-                acked[int(seqNum)] = 1
+                acked[int(seqNum)] = 1  # TODO: delete?
                 window_filled -= 1
                 self.sending_buffer[int(seqNum) % buffer_size] = None
                 print(self.sending_buffer)
-                print(('[' + str(start_time) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, str(int(seqNum) + 1)))
                 lock.release()
             # Message
             else:
                 seqNum = int(lines[0])
                 data = lines[1]
 
-                # Receiver: determine whether or not to discard packet
+                # Receiver: determine whether or not to discard packet (simulation)
                 if(self.drop_method == '-d'):   # deterministic
-                    if((seqNum + 1) % self.drop_value == 0):
-                        test[seqNum] = 'X'
-                        dropped_count += 1
+                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                        self.test[seqNum] = 'X'
+                        self.dropped_count += 1
                     else:
-                        test[seqNum] = data
+                        self.test[seqNum] = data
                         print(('[' + str(time.time()) + '] packet: {} content: {} received').format(str(seqNum), data))
                 elif(self.drop_method == '-p'): # probabilistic
                     random_num = float(randint(1, 100)/100)
                     if(random_num <= self.drop_value):
-                        test[seqNum] = 'X'
-                        dropped_count += 1
+                        self.test[seqNum] = 'X'
+                        self.dropped_count += 1
                     else:
-                        test[seqNum] = data
+                        self.test[seqNum] = data
                         print(('[' + str(time.time()) + '] packet: {} content: {} received').format(str(seqNum), data))
-                
-                print(test)
-                print(("# Dropped packets / # received --- {}/{}: ").format(dropped_count, seqNum + 1))
+                print(self.test)
+                print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
 
                 ack = 'ack' + '\t' + str(seqNum)
                 node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
 
-                print(test)
 
     def nodeSend(self):
 
