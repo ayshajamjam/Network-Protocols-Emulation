@@ -138,20 +138,23 @@ class Node:
 
             num = 0
             while num < len(message):
+                lock.acquire()
                 packet = str(num) + '\t' + message[num]
                 # Send message to peer_port
                 if(self.next_available_spot - self.window_start < self.window_size):
                     # Insert packet into buffer
-                    lock.acquire()
+
                     self.sending_buffer[num % buffer_size] = num
                     print(self.sending_buffer)
                     self.next_available_spot = (self.next_available_spot + 1) % buffer_size
                     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
                     start_time = float(time.time())
                     print(('Start -- ' + str(num) + ' [' + str(start_time) + '] packet: {} content: {} sent').format(num, message[num]))
-                    lock.release()
+                    
                     num += 1
                 elif(self.window_size == 5):
-                    print('Cannot send yet, waiting for ACK: ', self.last_acked_packet + 1)
+                    num = num
+                    # print('Cannot send yet, waiting for ACK: ', self.last_acked_packet + 1)
                 else:
                     num += 1
+                lock.release()
