@@ -35,6 +35,7 @@ class Node:
 
         self.window_start = 0
         self.next_available_spot = 0
+        self.last_acked_packet = -1
 
     def nodeListen(self):
 
@@ -65,32 +66,36 @@ class Node:
                 # Sender: determine whether or not to discard ack (simulation)
                 if(self.drop_method == '-d'):   # deterministic
                     # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                    if(seqNum == self.drop_value):
-                        print("Dropping an ack")
+                    if(seqNum == 2 or seqNum == 3):
+                        print("Dropping an ack for packet: ", seqNum)
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
                     else:
-                        self.test[seqNum] = 'ACKED: ' + str(seqNum)
+                        # self.test[seqNum] = 'ACKED: ' + str(seqNum)
+                        # lock.acquire()
+                        # # Move the window to most recent ack seq
+                        # self.window_start = (seqNum + 1) % buffer_size
+                        # self.sending_buffer[int(seqNum) % buffer_size] = None
+                        # print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
+                        # print(self.sending_buffer)
+                        # lock.release()
+
                         lock.acquire()
                         # Move the window to most recent ack seq
-                        # self.window_start = seqNum
                         self.window_start = (seqNum + 1) % buffer_size
-                        self.sending_buffer[int(seqNum) % buffer_size] = None
+                        while(self.last_acked_packet < seqNum):
+                            self.test[self.last_acked_packet + 1] = 'ACKED: ' + str(self.last_acked_packet + 1)
+                            self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
+                            self.last_acked_packet += 1
                         print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
                         print(self.sending_buffer)
                         lock.release()
                 
+                
                 print(self.test)
                 print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
                 print('\n')
-                # # TODO: This needs to be moved to else statements
-                # # print('Stop -- ' + str(seqNum) + ' [' + str(time.time()) + ']')
-                # lock.acquire()
-                # acked[int(seqNum)] = 1  # TODO: delete?
-                # window_filled -= 1
-                # self.sending_buffer[int(seqNum) % buffer_size] = None
-                # print(self.sending_buffer)
-                # lock.release()
+
             # Message
             else:
                 seqNum = int(lines[0])
