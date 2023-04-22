@@ -105,7 +105,7 @@ class Node:
                 # Receiver: determine whether or not to discard packet (simulation)
                 if(self.drop_method == '-d'):   # deterministic
                     # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                    if(seqNum == 2):    # for testing
+                    if(seqNum == 7):    # for testing
                         print("***Dropping packet: ", seqNum, "***")
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
@@ -155,29 +155,27 @@ class Node:
             # Retrieve message from input
             message = getMessage(input_list)
 
-            num = 0
-            while num < len(message):
-                packet = str(num) + '\t' + message[num]
+
+            while self.last_acked_packet < len(message):
+                current_packet = self.last_acked_packet + 1
+                print(self.last_acked_packet)
+                packet = str(current_packet) + '\t' + message[current_packet]
                 # Send message to peer_port
                 if(self.next_available_spot - self.window_start < self.window_size):
                     # Insert packet into buffer
                     lock.acquire()
-                    self.sending_buffer[num % buffer_size] = num
+                    self.sending_buffer[current_packet % buffer_size] = current_packet
                     # print(self.sending_buffer)
                     self.next_available_spot = (self.next_available_spot + 1) % buffer_size
                     lock.release()
                     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
-                    if(num == 0):
+                    if(current_packet == 0):
                         start_time = float(time.time())
                         print(("-----START[{}]----").format(start_time))
-                    print(('[' + str(time.time()) + '] packet: {} content: {} sent').format(num, message[num]))
-                    num += 1
-                elif(self.window_size == 5):
-                    num = num
-                    # print('Cannot send yet, waiting for ACK: ', self.last_acked_packet + 1)
-                else:
-                    num += 1
-
+                    print(('[' + str(time.time()) + '] packet: {} content: {} sent').format(current_packet, message[current_packet]))
+                if(time.time() - start_time >= 0.5):
+                    print("TIMEOUT")
+                    break
 
             # while self.last_acked_packet != len(message) - 1:
             #     num = self.next_available_spot
