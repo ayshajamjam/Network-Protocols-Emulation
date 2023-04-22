@@ -48,7 +48,7 @@ class Node:
         node_listen_socket.bind(('', self.self_port))
         
         while True:
-
+            
             self.packets_received += 1
 
             buffer, sender_address = node_listen_socket.recvfrom(4096)
@@ -88,6 +88,7 @@ class Node:
                             self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
                             self.last_acked_packet += 1
                         print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
+
                         if(self.window_start != self.last_acked_packet):
                             start_time = time.time()
                             print(("-----RESTART[{}]----").format(start_time))
@@ -104,15 +105,11 @@ class Node:
                 # Receiver: determine whether or not to discard packet (simulation)
                 if(self.drop_method == '-d'):   # deterministic
                     # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                    if(seqNum == 7):    # for testing
+                    if(seqNum == 2):    # for testing
                         print("***Dropping packet: ", seqNum, "***")
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
                         print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
-
-                        while(float(time.time()) < start_time + 0.5):
-                            continue
-
                     elif(self.last_acked_packet != seqNum - 1):
                         print(('[' + str(time.time()) + '] packet: {} content: {} discarded').format(str(seqNum), data))
                         # print("Last acked packet: ", self.last_acked_packet)
@@ -141,10 +138,6 @@ class Node:
         listen = threading.Thread(target=self.nodeListen)
         listen.start()
 
-        # if(float(time.time()) >= start_time + 0.5):
-        #     time_current = time.time()
-        #     print(("TIMEOUT, {} - {}").format(time_current, start_time), " = ", float(time.time()) - start_time)
-
         while True:
 
             # Get input from user
@@ -163,7 +156,7 @@ class Node:
             message = getMessage(input_list)
 
             num = 0
-            while num < len(message) and self.last_acked_packet != len(message) - 1:
+            while num < len(message):
                 packet = str(num) + '\t' + message[num]
                 # Send message to peer_port
                 if(self.next_available_spot - self.window_start < self.window_size):
@@ -182,8 +175,32 @@ class Node:
                 elif(self.window_size == 5):
                     num = num
                     # print('Cannot send yet, waiting for ACK: ', self.last_acked_packet + 1)
-                elif(float(time.time()) >= start_time + 0.5):
-                    time_current = time.time()
-                    print(("TIMEOUT, {} - {}").format(time_current, start_time), " = ", float(time.time()) - start_time)
                 else:
                     num += 1
+
+
+            # while self.last_acked_packet != len(message) - 1:
+            #     num = self.next_available_spot
+            #     packet = str(num) + '\t' + message[num]
+            #     # Send message to peer_port
+            #     if(self.next_available_spot - self.window_start < self.window_size):
+            #         # Insert packet into buffer
+            #         lock.acquire()
+            #         self.sending_buffer[num % buffer_size] = num
+            #         # print(self.sending_buffer)
+            #         if(self.next_available_spot - self.window_start < self.window_size):
+            #             self.next_available_spot = (self.next_available_spot + 1) % buffer_size
+            #         lock.release()
+            #         node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+            #         if(num == 0):
+            #             start_time = float(time.time())
+            #             print(("-----START[{}]----").format(start_time))
+            #         print(('[' + str(time.time()) + '] packet: {} content: {} sent').format(num, message[num]))
+            #     elif(self.window_size == 5):    #TODO remove hard_code
+            #         num = num
+            #         # print('Cannot send yet, waiting for ACK: ', self.last_acked_packet + 1)
+            #     elif(float(time.time()) >= start_time + 0.5):
+            #         time_current = time.time()
+            #         print(("TIMEOUT, {} - {}").format(time_current, start_time), " = ", float(time.time()) - start_time)
+            #     else:
+            #         self.next_available_spot = (self.next_available_spot + 1) % buffer_size
