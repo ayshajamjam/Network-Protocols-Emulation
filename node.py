@@ -48,7 +48,11 @@ class Node:
         node_listen_socket.bind(('', self.self_port))
         
         while True:
-            
+
+            while(float(time.time()) < start_time + 0.5):
+                continue
+            print("TIMEOUT, ", float(time.time()) - start_time)
+
             self.packets_received += 1
 
             buffer, sender_address = node_listen_socket.recvfrom(4096)
@@ -103,7 +107,7 @@ class Node:
                 # Receiver: determine whether or not to discard packet (simulation)
                 if(self.drop_method == '-d'):   # deterministic
                     # if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                    if(seqNum == 2):    # for testing
+                    if(seqNum == 7):    # for testing
                         print("***Dropping packet: ", seqNum, "***")
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
