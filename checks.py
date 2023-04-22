@@ -14,3 +14,8 @@ def checkDropMethod(drop_method, drop_value):
         return False
     else:
         return True
+
+def checkLossRate(loss):
+    if(loss < 0 or loss > 1):
+        return False
+    return True
