@@ -38,6 +38,5 @@ if __name__ == "__main__":
         else:
             neighbor_ports[int(sys.argv[arg])] = float(sys.argv[arg+1])
 
-    print(neighbor_ports)
-
-    node = dvNode(local_port, neighbor_ports, last)
+    node = DvNode(local_port, neighbor_ports, last)
+    node.info()
