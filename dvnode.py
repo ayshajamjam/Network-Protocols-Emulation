@@ -39,4 +39,14 @@ if __name__ == "__main__":
             neighbor_ports[int(sys.argv[arg])] = float(sys.argv[arg+1])
 
     node = DvNode(local_port, neighbor_ports, last)
+    print('\n')
     node.info()
+    print('\n')
+
+
+    # Start first round of sending dv to neighbors
+    if(last == 1):
+        print("Sending dv to neighbors")
+        node.send_dv()
+    else:
+        node.nodeSend()
