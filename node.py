@@ -49,10 +49,6 @@ class Node:
         
         while True:
 
-            while(float(time.time()) < start_time + 0.5):
-                continue
-            print("TIMEOUT, ", float(time.time()) - start_time)
-
             self.packets_received += 1
 
             buffer, sender_address = node_listen_socket.recvfrom(4096)
@@ -92,8 +88,9 @@ class Node:
                             self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
                             self.last_acked_packet += 1
                         print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
-                        start_time = time.time()
-                        print(("-----RESTART[{}]----").format(start_time))
+                        if(self.window_start != self.last_acked_packet):
+                            start_time = time.time()
+                            print(("-----RESTART[{}]----").format(start_time))
                         # print(self.sending_buffer)
                         lock.release()
 
@@ -112,6 +109,10 @@ class Node:
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
                         print(("# Dropped packets / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+
+                        while(float(time.time()) < start_time + 0.5):
+                            continue
+
                     elif(self.last_acked_packet != seqNum - 1):
                         print(('[' + str(time.time()) + '] packet: {} content: {} discarded').format(str(seqNum), data))
                         # print("Last acked packet: ", self.last_acked_packet)
@@ -140,6 +141,10 @@ class Node:
         listen = threading.Thread(target=self.nodeListen)
         listen.start()
 
+        # if(float(time.time()) >= start_time + 0.5):
+        #     time_current = time.time()
+        #     print(("TIMEOUT, {} - {}").format(time_current, start_time), " = ", float(time.time()) - start_time)
+
         while True:
 
             # Get input from user
@@ -158,7 +163,7 @@ class Node:
             message = getMessage(input_list)
 
             num = 0
-            while num < len(message):
+            while num < len(message) and self.last_acked_packet != len(message) - 1:
                 packet = str(num) + '\t' + message[num]
                 # Send message to peer_port
                 if(self.next_available_spot - self.window_start < self.window_size):
@@ -177,5 +182,8 @@ class Node:
                 elif(self.window_size == 5):
                     num = num
                     # print('Cannot send yet, waiting for ACK: ', self.last_acked_packet + 1)
+                elif(float(time.time()) >= start_time + 0.5):
+                    time_current = time.time()
+                    print(("TIMEOUT, {} - {}").format(time_current, start_time), " = ", float(time.time()) - start_time)
                 else:
                     num += 1
