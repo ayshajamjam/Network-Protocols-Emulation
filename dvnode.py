@@ -28,6 +28,7 @@ if __name__ == "__main__":
 
     # Get neighbor-port:loss-rate
     dv = {}
+    neighbor_ports = set()
     for arg in range(2, len(sys.argv) - 1, 2):
         if(not checkPort(int(sys.argv[arg]))):
             print("Check neighbor ports")
@@ -37,8 +38,9 @@ if __name__ == "__main__":
             sys.exit(0)
         else:
             dv[int(sys.argv[arg])] = float(sys.argv[arg+1])
+            neighbor_ports.add(int(sys.argv[arg]))
 
-    node = DvNode(local_port, dv, last)
+    node = DvNode(local_port, neighbor_ports, dv, last)
     print('\n')
     node.info()
     node.print_routing_table()
