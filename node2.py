@@ -48,13 +48,18 @@ class DvNode:
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
         node_listen_socket.bind(('', self.local_port))
+
+        print(self.local_port)
         
         while True:
             buffer, sender_address = node_listen_socket.recvfrom(4096)
             buffer = buffer.decode()
 
-            print(("\n[{}] Message received at Node {} from Node {}").format(time.time(), self.local_port, sender_address[1]))
-            dv_res = ast.literal_eval(buffer)   # converts strin containing dv vector to dict
+            split_msg = buffer.split('\n')
+            print(split_msg)
+            sender_port = int(split_msg[0])
+            dv_res = ast.literal_eval(split_msg[1])   # converts strin containing dv vector to dict
+            print(("\n[{}] Message received at Node {} from Node {}").format(time.time(), self.local_port, sender_port))
             print("Message: ", dv_res)
 
             old_dv = copy.deepcopy(self.dv)
@@ -65,15 +70,15 @@ class DvNode:
                 if(node != self.local_port and node in self.routing_table.keys()):
                     lock.acquire()
                     current_dist = self.dv[node]
-                    candidate_dist = round(self.dv[sender_address[1]] + dv_res[node], 1)
+                    candidate_dist = round(self.dv[sender_port] + dv_res[node], 1)
                     print(node, " >> Node is already in table. ", "current: ", current_dist, ' vs ', "candidate; ", candidate_dist )
                     if(candidate_dist < current_dist):
                         self.dv[node] = candidate_dist
 
-                        if(self.routing_table[sender_address[1]][1] != None):
-                            self.routing_table[node] = (candidate_dist, self.routing_table[sender_address[1]][1])
+                        if(self.routing_table[sender_port][1] != None):
+                            self.routing_table[node] = (candidate_dist, self.routing_table[sender_port][1])
                         else:
-                            self.routing_table[node] = (candidate_dist, sender_address[1])
+                            self.routing_table[node] = (candidate_dist, sender_port)
                         
                         # Remove this neighbor from neighbor_ports to avoid collision
                         # There is an easier way to get to this destination node than directly
@@ -86,8 +91,8 @@ class DvNode:
                     lock.acquire()
                     print("Neighbor ports: ", self.neighbor_ports)
                     print(node, " >> Need to add new reachable node: ", node)
-                    self.dv[node] = round(self.dv[sender_address[1]] + dv_res[node], 1)
-                    self.routing_table[node] = (round(self.dv[sender_address[1]] + dv_res[node], 1), sender_address[1])
+                    self.dv[node] = round(self.dv[sender_port] + dv_res[node], 1)
+                    self.routing_table[node] = (round(self.dv[sender_port] + dv_res[node], 1), sender_port)
                     lock.release()
                 else:
                     print(node, " >> This is the local port.")
@@ -106,12 +111,12 @@ class DvNode:
                 print("First time forwarding")
                 for neighbor in self.neighbor_ports:
                     print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
-                    node_listen_socket.sendto(str(self.dv).encode(), (IP, neighbor))
+                    node_listen_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
             elif(self.dv != old_dv):
                 print("Distance vector has changed")
                 for neighbor in self.neighbor_ports:
                     print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
-                    node_listen_socket.sendto(str(self.dv).encode(), (IP, neighbor))
+                    node_listen_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
             else:
                 print("Distance vector has not changed")
                 print(old_dv)
@@ -131,7 +136,7 @@ class DvNode:
     def send_initial_dv(self):
         # Create UDP socket
         node_send_socket = socket(AF_INET, SOCK_DGRAM)
-        node_send_socket.bind((IP, self.local_port))
+        # node_send_socket.bind((IP, self.local_port))
 
         # Multithreading
         listen = threading.Thread(target=self.nodeListen)
@@ -140,4 +145,4 @@ class DvNode:
         self.forward_count += 1
         for neighbor in self.neighbor_ports:
             print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
-            node_send_socket.sendto(str(self.dv).encode(), (IP, neighbor))
+            node_send_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
