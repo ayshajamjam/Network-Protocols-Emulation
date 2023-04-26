@@ -54,11 +54,13 @@ class DvNode:
             dv_res = ast.literal_eval(buffer)   # converts strin containing dv vector to dict
             print(dv_res)
 
+            old_dv = self.dv
+
             # Populate routing table
             for node in dv_res:
                 if(node != self.local_port and node in self.routing_table.keys()):
                     current_dist = self.dv[node]
-                    candidate_dist = dv_res[node]
+                    candidate_dist = round(self.dv[sender_address[1]] + dv_res[node], 1)
                     print(node, " >> Node is already in table. ", "current: ", current_dist, ' vs ', "candidate; ", candidate_dist )
                     if(candidate_dist < current_dist):
                         self.dv[node] = candidate_dist
@@ -74,9 +76,17 @@ class DvNode:
             # Forward distance vector to neighbors
             self.forward_count += 1
 
-            for neighbor in self.dv:
-                print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
-                node_listen_socket.sendto(str(self.dv).encode(), (IP, neighbor))
+            # Only forward dv if this node has never forwarded before
+            # or if there is a change in the distance vector
+            if(self.forward_count == 1):
+                print("First time forwarding")
+                for neighbor in self.dv:
+                    print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
+                    node_listen_socket.sendto(str(self.dv).encode(), (IP, neighbor))
+            elif(self.dv != old_dv):
+                print("Distance vector has changed")
+            else:
+                print("Distance vector has not changed")
 
     def nodeSend(self):
         # Create UDP socket
