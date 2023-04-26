@@ -53,9 +53,9 @@ class DvNode:
             buffer, sender_address = node_listen_socket.recvfrom(4096)
             buffer = buffer.decode()
 
-            print(("[{}] Message received at Node {} from Node {}").format(time.time(), self.local_port, sender_address[1]))
+            print(("\n[{}] Message received at Node {} from Node {}").format(time.time(), self.local_port, sender_address[1]))
             dv_res = ast.literal_eval(buffer)   # converts strin containing dv vector to dict
-            print(dv_res)
+            print("Message: ", dv_res)
 
             old_dv = copy.deepcopy(self.dv)
             print("OLD DV: ", old_dv)
@@ -63,24 +63,32 @@ class DvNode:
             # Populate routing table
             for node in dv_res:
                 if(node != self.local_port and node in self.routing_table.keys()):
+                    lock.acquire()
                     current_dist = self.dv[node]
                     candidate_dist = round(self.dv[sender_address[1]] + dv_res[node], 1)
                     print(node, " >> Node is already in table. ", "current: ", current_dist, ' vs ', "candidate; ", candidate_dist )
                     if(candidate_dist < current_dist):
                         self.dv[node] = candidate_dist
-                        self.routing_table[node] = (candidate_dist, sender_address[1])
+
+                        if(self.routing_table[sender_address[1]][1] != None):
+                            self.routing_table[node] = (candidate_dist, self.routing_table[sender_address[1]][1])
+                        else:
+                            self.routing_table[node] = (candidate_dist, sender_address[1])
                         
                         # Remove this neighbor from neighbor_ports to avoid collision
                         # There is an easier way to get to this destination node than directly
-                        if(node in self.neighbor_ports):
-                            self.neighbor_ports.remove(node)
+                        # if(node in self.neighbor_ports):
+                        #     self.neighbor_ports.remove(node)
+                        #     print(("Removed {} from neighbor ports").format(node))
 
+                    lock.release()
                 elif(node != self.local_port and node not in self.routing_table.keys()):
+                    lock.acquire()
                     print("Neighbor ports: ", self.neighbor_ports)
                     print(node, " >> Need to add new reachable node: ", node)
                     self.dv[node] = round(self.dv[sender_address[1]] + dv_res[node], 1)
                     self.routing_table[node] = (round(self.dv[sender_address[1]] + dv_res[node], 1), sender_address[1])
-                    print("Neighbor ports: ", self.neighbor_ports)
+                    lock.release()
                 else:
                     print(node, " >> This is the local port.")
             
