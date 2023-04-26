@@ -22,6 +22,9 @@ class DvNode:
         for node in self.dv:
             self.routing_table[node] = (self.dv[node], None)
 
+        # Keep track of number of times this node has forwarded its dv
+        self.forward_count = 0
+
     def info(self):
         print("Local port: ", self.local_port)
         print("Distance vector: ", self.dv)
@@ -53,12 +56,27 @@ class DvNode:
 
             # Populate routing table
             for node in dv_res:
-                if(node != self.local_port and node not in self.routing_table):
-                    print("Need to populate new reachable node: ", node)
-                # else:
-                #     print(self.routing_table[node])
-                # self.routing_table[sender_address[1]] = (node, dv_res[node])
-            # print(self.routing_table)
+                if(node != self.local_port and node in self.routing_table.keys()):
+                    current_dist = self.dv[node]
+                    candidate_dist = dv_res[node]
+                    print(node, " >> Node is already in table. ", "current: ", current_dist, ' vs ', "candidate; ", candidate_dist )
+                    if(candidate_dist < current_dist):
+                        self.dv[node] = candidate_dist
+                        self.routing_table[node] = (candidate_dist, sender_address[1])
+                elif(node != self.local_port and node not in self.routing_table.keys()):
+                    print(node, " >> Need to add new reachable node: ", node)
+                    self.dv[node] = dv_res[node]
+                    self.routing_table[node] = (dv_res[node], sender_address[1])
+                else:
+                    print(node, " >> This is the local port.")
+            self.print_routing_table()
+
+            # Forward distance vector to neighbors
+            self.forward_count += 1
+
+            for neighbor in self.dv:
+                print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
+                node_listen_socket.sendto(str(self.dv).encode(), (IP, neighbor))
 
     def nodeSend(self):
         # Create UDP socket
@@ -77,6 +95,7 @@ class DvNode:
         listen = threading.Thread(target=self.nodeListen)
         listen.start()
 
+        self.forward_count += 1
         for neighbor in self.dv:
             print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
             node_send_socket.sendto(str(self.dv).encode(), (IP, neighbor))
