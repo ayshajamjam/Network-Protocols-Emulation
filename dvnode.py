@@ -47,8 +47,4 @@ if __name__ == "__main__":
     print('\n')
 
     # Start first round of sending dv to neighbors
-    if(last == 1):
-        print("Sending dv to neighbors")
-        node.send_initial_dv()
-    else:
-        node.nodeSend()
+    node.nodeSend()

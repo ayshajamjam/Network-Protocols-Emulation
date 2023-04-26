@@ -48,12 +48,14 @@ class DvNode:
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
         node_listen_socket.bind(('', self.local_port))
-
-        print(self.local_port)
         
         while True:
+            print("AAAAAAAA: ", self.local_port)
             buffer, sender_address = node_listen_socket.recvfrom(4096)
+            print("BBBBBBBB: ", self.local_port)
             buffer = buffer.decode()
+            print("CCCCCCCC: ", self.local_port)
+
 
             split_msg = buffer.split('\n')
             print(split_msg)
@@ -99,21 +101,21 @@ class DvNode:
             
             self.print_routing_table()
 
-            # Forward distance vector to neighbors
-            self.forward_count += 1
-
             print("OLD DV: ", old_dv)
             print("CURRENT DV: ", self.dv)
 
             # Only forward dv if this node has never forwarded before
             # or if there is a change in the distance vector
-            if(self.forward_count == 1):
+            if(self.forward_count == 0):
                 print("First time forwarding")
+                # Forward distance vector to neighbors
+                self.forward_count += 1
                 for neighbor in self.neighbor_ports:
                     print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
                     node_listen_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
             elif(self.dv != old_dv):
                 print("Distance vector has changed")
+                self.forward_count += 1
                 for neighbor in self.neighbor_ports:
                     print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
                     node_listen_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
@@ -133,16 +135,11 @@ class DvNode:
         listen = threading.Thread(target=self.nodeListen)
         listen.start()
 
-    def send_initial_dv(self):
-        # Create UDP socket
-        node_send_socket = socket(AF_INET, SOCK_DGRAM)
-        # node_send_socket.bind((IP, self.local_port))
+        if(self.last == 1):
+            print("Sending dv to neighbors")
+            self.forward_count += 1
+            for neighbor in self.neighbor_ports:
+                print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
+                node_send_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
 
-        # Multithreading
-        listen = threading.Thread(target=self.nodeListen)
-        listen.start()
-
-        self.forward_count += 1
-        for neighbor in self.neighbor_ports:
-            print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
-            node_send_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
+        
