@@ -55,8 +55,8 @@ class DvNode:
             for node in dv_res:
                 if(node != self.local_port and node not in self.routing_table):
                     print("Need to populate new reachable node: ", node)
-                else:
-                    print(self.routing_table[node])
+                # else:
+                #     print(self.routing_table[node])
                 # self.routing_table[sender_address[1]] = (node, dv_res[node])
             # print(self.routing_table)
 
@@ -71,7 +71,7 @@ class DvNode:
     def send_initial_dv(self):
         # Create UDP socket
         node_send_socket = socket(AF_INET, SOCK_DGRAM)
-        # node_send_socket.bind((IP, self.local_port))
+        node_send_socket.bind((IP, self.local_port))
 
         # Multithreading
         listen = threading.Thread(target=self.nodeListen)
