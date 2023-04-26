@@ -27,7 +27,7 @@ if __name__ == "__main__":
         last = 1
 
     # Get neighbor-port:loss-rate
-    neighbor_ports = {}
+    dv = {}
     for arg in range(2, len(sys.argv) - 1, 2):
         if(not checkPort(int(sys.argv[arg]))):
             print("Check neighbor ports")
@@ -36,17 +36,18 @@ if __name__ == "__main__":
             print("Check loss rates")
             sys.exit(0)
         else:
-            neighbor_ports[int(sys.argv[arg])] = float(sys.argv[arg+1])
+            dv[int(sys.argv[arg])] = float(sys.argv[arg+1])
 
-    node = DvNode(local_port, neighbor_ports, last)
+    node = DvNode(local_port, dv, last)
     print('\n')
     node.info()
+    node.print_routing_table()
     print('\n')
-
 
     # Start first round of sending dv to neighbors
     if(last == 1):
+        node.nodeSend()
         print("Sending dv to neighbors")
-        node.send_dv()
+        node.send_initial_dv()
     else:
         node.nodeSend()
