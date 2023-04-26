@@ -69,6 +69,12 @@ class DvNode:
                     if(candidate_dist < current_dist):
                         self.dv[node] = candidate_dist
                         self.routing_table[node] = (candidate_dist, sender_address[1])
+                        
+                        # Remove this neighbor from neighbor_ports to avoid collision
+                        # There is an easier way to get to this destination node than directly
+                        if(node in self.neighbor_ports):
+                            self.neighbor_ports.remove(node)
+
                 elif(node != self.local_port and node not in self.routing_table.keys()):
                     print("Neighbor ports: ", self.neighbor_ports)
                     print(node, " >> Need to add new reachable node: ", node)
@@ -102,7 +108,9 @@ class DvNode:
                 print("Distance vector has not changed")
                 print(old_dv)
                 print(self.dv)
-                sys.exit(0)
+
+                # print('\nFinal routing table')
+                # self.print_routing_table()
 
     def nodeSend(self):
         # Create UDP socket
