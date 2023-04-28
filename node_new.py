@@ -33,6 +33,10 @@ class Node:
         self.dropped_count = 0
         self.last_acked_packet = -1
 
+
+        self.window_start = 0
+        self.next_option = 0
+
     def nodeListen(self):
 
         # Need to declare a new socket bc socket is already being used to send
@@ -55,7 +59,7 @@ class Node:
                 data = lines[2]
                 # Deterministic packet dropping
                 if(self.drop_method == '-d'):
-                    if(seqNum == 1):
+                    if(seqNum == -1):
                         print(">>> Dropping packet: ", seqNum)
                         self.test[seqNum] = 'X'
                         self.dropped_count += 1
@@ -81,7 +85,10 @@ class Node:
                 else:
                     print(("[{}] ACK: {} received").format(time.time(), seqNum))
                     self.last_acked_packet += 1
-                    print(self.last_acked_packet)
+                    self.window_start += 1
+                    self.sending_buffer[seqNum] = None
+                    print(self.sending_buffer)
+                    print(self.window_start, ' ', self.next_option)
 
 
     def nodeSend(self):
@@ -114,13 +121,23 @@ class Node:
             message = getMessage(input_list)
 
             # Break message into single character packets
-            for i, char in enumerate(message):
-                packet = 'data\t' + str(i) + '\t' + message[i]
+            i = 0
+            while (i < len(message)) and self.last_acked_packet < len(message) - 1:
 
-                # Add packet to sending buffer
-                self.sending_buffer[i % buffer_size] = (i, message[i])
+                # check if next_option - start_window < window_size
+                if(self.next_option - self.window_start < self.window_size):
 
-                # Send single character packet to peer
-                node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
-                print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
-                print(self.sending_buffer)
+                    packet = 'data\t' + str(i) + '\t' + message[i]
+
+                    # Add packet to sending buffer
+                    self.sending_buffer[i % buffer_size] = (i, message[i])
+
+                    # Send single character packet to peer
+                    node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                    print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
+                    print(self.sending_buffer)
+
+                    self.next_option += 1
+                    print(self.window_start, ' ', self.next_option)
+
+                    i += 1
