@@ -28,6 +28,11 @@ class Node:
         self.drop_value = drop_value
         self.sending_buffer = [None] * buffer_size
 
+        self.test = ['O'] * buffer_size
+        self.packets_received = 0
+        self.dropped_count = 0
+        self.last_acked_packet = -1
+
     def nodeListen(self):
 
         # Need to declare a new socket bc socket is already being used to send
@@ -36,24 +41,48 @@ class Node:
         
         while True:
 
+            self.packets_received += 1
+
             buffer, sender_address = node_listen_socket.recvfrom(4096)
             buffer = buffer.decode()
             lines = buffer.split('\t')
 
             header = lines[0]
 
+            # Receiver got data
             if(header == 'data'):
                 seqNum = int(lines[1])
                 data = lines[2]
-                print(("[{}] packet: {} content {} received").format(time.time(), seqNum, data))
-
-                # send ack
-                ack = 'ack\t' + str(seqNum)
-                node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
-                print(("[{}] ACK: {} sent").format(time.time(), seqNum))
+                # Deterministic packet dropping
+                if(self.drop_method == '-d'):
+                    if(seqNum == 1):
+                        print(">>> Dropping packet: ", seqNum)
+                        self.test[seqNum] = 'X'
+                        self.dropped_count += 1
+                        print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    elif(self.last_acked_packet != seqNum - 1):
+                        print(("[{}] packet: {} content: {} discarded").format(time.time(), seqNum, data))
+                        ack = 'ack\t' + str(self.last_acked_packet)
+                        node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
+                        print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(self.last_acked_packet), str(self.last_acked_packet + 1)))
+                    else:
+                        # everything went smoothly, send ack
+                        print(("[{}] packet: {} content: {} received").format(time.time(), seqNum, data))
+                        ack = 'ack\t' + str(seqNum)
+                        self.test[seqNum] = data
+                        self.last_acked_packet += 1
+                        node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
+                        print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(seqNum), str(seqNum + 1)))
+                print(self.test)
             elif(header == 'ack'):
                 seqNum = int(lines[1])
-                print(("[{}] ACK: {} received").format(time.time(), seqNum))
+                if(self.last_acked_packet == seqNum):
+                    print(('[{}] ACK packet: {} discarded').format(time.time(), seqNum))
+                else:
+                    print(("[{}] ACK: {} received").format(time.time(), seqNum))
+                    self.last_acked_packet += 1
+                    print(self.last_acked_packet)
+
 
     def nodeSend(self):
 
@@ -92,7 +121,6 @@ class Node:
                 self.sending_buffer[i % buffer_size] = (i, message[i])
 
                 # Send single character packet to peer
-                node_send_socket.settimeout(2)
                 node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
                 print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
                 print(self.sending_buffer)
