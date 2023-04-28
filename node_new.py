@@ -6,6 +6,8 @@ import json
 import time
 import ipaddress
 from random import *
+from threading import Condition
+
 
 IP = '127.0.0.1'
 buffer_size = 10
@@ -38,7 +40,20 @@ class Node:
             buffer = buffer.decode()
             lines = buffer.split('\t')
 
-            print(lines)
+            header = lines[0]
+
+            if(header == 'data'):
+                seqNum = int(lines[1])
+                data = lines[2]
+                print(("[{}] packet: {} content {} received").format(time.time(), seqNum, data))
+
+                # send ack
+                ack = 'ack\t' + str(seqNum)
+                node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
+                print(("[{}] ACK: {} sent").format(time.time(), seqNum))
+            elif(header == 'ack'):
+                seqNum = int(lines[1])
+                print(("[{}] ACK: {} received").format(time.time(), seqNum))
 
     def nodeSend(self):
 
@@ -48,6 +63,9 @@ class Node:
         # Multithreading
         listen = threading.Thread(target=self.nodeListen)
         listen.start()
+
+        # Time out thread
+        timeout_obj = threading.Condition()
 
         while True:
 
@@ -65,5 +83,16 @@ class Node:
 
             # Retrieve message from input
             message = getMessage(input_list)
-            node_send_socket.sendto(message.encode(), (IP, self.peer_port))
-            print("Sent: ", message)
+
+            # Break message into single character packets
+            for i, char in enumerate(message):
+                packet = 'data\t' + str(i) + '\t' + message[i]
+
+                # Add packet to sending buffer
+                self.sending_buffer[i % buffer_size] = (i, message[i])
+
+                # Send single character packet to peer
+                node_send_socket.settimeout(2)
+                node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
+                print(self.sending_buffer)
