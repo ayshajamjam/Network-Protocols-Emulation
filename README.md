@@ -6,8 +6,8 @@
 
 **Node**: python3 gbnnode.py <self-port> <peer-port> <window-size> [ -d <value-of-n> | -p <value-of-p>]
 
-- python3 gbnnode.py 1111 2222 5 -d 4
-- python3 gbnnode.py 2222 1111 5 -d 2
+- python3 gbnnode.py 1111 2222 5 -d 0
+- python3 gbnnode.py 2222 1111 5 -d 0
 
 ## Checks
 
