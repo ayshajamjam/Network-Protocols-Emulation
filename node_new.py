@@ -131,16 +131,16 @@ class Node:
                 if(self.next_option - self.window_start < self.window_size):
 
                     packet = 'data\t' + str(i) + '\t' + message[i]
-
+                    
                     # Add packet to sending buffer
+                    lock.acquire()
                     self.sending_buffer[i % buffer_size] = (i, message[i])
-
+                    self.next_option = (self.next_option + 1) % buffer_size
+                    lock.release()
                     # Send single character packet to peer
                     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
                     print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
                     print(self.sending_buffer)
-
-                    self.next_option = (self.next_option + 1) % buffer_size
                     print(self.window_start, ' ', self.next_option)
 
                     i += 1
