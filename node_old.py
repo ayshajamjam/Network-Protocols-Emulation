@@ -86,7 +86,7 @@ class Node:
                             self.test[self.last_acked_packet + 1] = 'ACKED: ' + str(self.last_acked_packet + 1)
                             self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
                             self.last_acked_packet += 1
-                        print(('[' + str(time_received) + '] ACK packet: {} received, window moves to packet: {}').format(seqNum, self.window_start))
+                        print(('[' + str(time_received) + '] ACK packet: {} received, window_start moves to position: {}').format(seqNum, self.window_start))
 
                         if(self.window_start != self.last_acked_packet):
                             start_time = time.time()

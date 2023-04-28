@@ -33,7 +33,6 @@ class Node:
         self.dropped_count = 0
         self.last_acked_packet = -1
 
-
         self.window_start = 0
         self.next_option = 0
 
@@ -83,12 +82,16 @@ class Node:
                 if(self.last_acked_packet == seqNum):
                     print(('[{}] ACK packet: {} discarded').format(time.time(), seqNum))
                 else:
-                    print(("[{}] ACK: {} received").format(time.time(), seqNum))
-                    self.last_acked_packet += 1
-                    self.window_start += 1
-                    self.sending_buffer[seqNum] = None
-                    print(self.sending_buffer)
+                    lock.acquire()
+                    # Move the window to most recent ack seq
+                    self.window_start = (seqNum + 1) % buffer_size
+                    print(('[{}] ACK packet: {} received, window moves to packet: {}').format(time.time(), seqNum, self.window_start))
+                    while(self.last_acked_packet < seqNum):
+                        self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
+                        print(self.sending_buffer)
+                        self.last_acked_packet += 1
                     print(self.window_start, ' ', self.next_option)
+                    lock.release()
 
 
     def nodeSend(self):
@@ -137,7 +140,7 @@ class Node:
                     print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
                     print(self.sending_buffer)
 
-                    self.next_option += 1
+                    self.next_option = (self.next_option + 1) % buffer_size
                     print(self.window_start, ' ', self.next_option)
 
                     i += 1
