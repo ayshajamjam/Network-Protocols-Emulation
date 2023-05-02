@@ -12,6 +12,7 @@ from threading import Condition
 IP = '127.0.0.1'
 buffer_size = 10
 lock = threading.Lock()
+round2 = False
 
 def getMessage(input_list):
     message = ""
@@ -36,7 +37,7 @@ class Node:
         self.window_start = 0
         self.next_option = 0
 
-    def nodeListen(self):
+    def nodeListen(self, cond):
 
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
@@ -78,10 +79,11 @@ class Node:
                         print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(seqNum), str(seqNum + 1)))
                 print(">>> Testing Buffer: ", self.test)
             elif(header == 'ack'):
+                global round2
                 seqNum = int(lines[1])
 
                 if(self.drop_method == '-d'):   # deterministic
-                    if(seqNum == 1 or seqNum == 2 or seqNum == 3):    # for testing
+                    if(not round2 and (seqNum == 2 or seqNum == 3)):    # for testing
                         print("***Dropping an ack for packet: ", seqNum, "***")
                         self.test[seqNum % buffer_size] = 'X'
                         self.dropped_count += 1
@@ -89,6 +91,10 @@ class Node:
                     elif(self.last_acked_packet == seqNum):
                         print(('[{}] ACK packet: {} discarded').format(time.time(), seqNum))
                     else:
+                        cond.acquire()
+                        cond.notify()
+                        cond.release()
+
                         lock.acquire()
                         # Move the window to most recent ack seq
                         self.window_start = (seqNum + 1) % buffer_size
@@ -102,17 +108,42 @@ class Node:
                         lock.release()
                 print(">>> Testing Buffer: ", self.test)
 
+    def timer(self, cond, node_send_socket):
+        global round2
+
+        cond.acquire()
+        while True:
+            if(self.sending_buffer == [None] * buffer_size):
+                continue
+            val = cond.wait(3)
+            if val:
+                print("Ack received")
+            else:
+                print("Timeout- resend all packets in window")
+                print("Last acked packet: ", self.last_acked_packet)
+                round2 = True
+                for i in range(self.window_start, self.next_option):
+                    packet = 'data\t' + str(i) + '\t' + self.sending_buffer[i][1]
+                    node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                    print(("[{}] packet: {} content: {} REsent").format(time.time(), i, self.sending_buffer[i][1]))
+        cond.release()
+        
     def nodeSend(self):
+        print("Hello")
+
+        # Condition object
+        cond = threading.Condition()
 
         # Create UDP socket
         node_send_socket = socket(AF_INET, SOCK_DGRAM)
 
         # Multithreading
-        listen = threading.Thread(target=self.nodeListen)
+        listen = threading.Thread(target=self.nodeListen, args=(cond,))
         listen.start()
 
         # Time out thread
-        timeout_obj = threading.Condition()
+        timeout = threading.Thread(target=self.timer, args=(cond, node_send_socket))
+        timeout.start()
 
         while True:
 
@@ -142,12 +173,14 @@ class Node:
                     
                     # Add packet to sending buffer
                     lock.acquire()
-                    self.sending_buffer[i % buffer_size] = (i, message[i])
+                    self.sending_buffer[i % buffer_size] = (i, message[i])  # TODO: fix
                     self.next_option = (self.next_option + 1) % buffer_size
                     lock.release()
+
                     # Send single character packet to peer
                     node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
                     print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
+
                     print(self.sending_buffer)
                     print(self.window_start, ' ', self.next_option)
 
