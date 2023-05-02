@@ -60,7 +60,8 @@ class Node:
                 data = lines[2]
                 # Deterministic packet dropping
                 if(self.drop_method == '-d'):
-                    if(self.packets_received < 3 and seqNum == 1):
+                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                    # if(self.packets_received < 3 and seqNum == 1):
                         print(">>> Dropping packet: ", seqNum)
                         self.test[seqNum % buffer_size] = 'X'
                         self.dropped_count += 1
@@ -83,7 +84,8 @@ class Node:
                 seqNum = int(lines[1])
 
                 if(self.drop_method == '-d'):   # deterministic
-                    if(not round2 and (seqNum == -1)):    # for testing
+                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                    # if(not round2 and (seqNum == -1)):    # for testing
                         print("***Dropping an ack for packet: ", seqNum, "***")
                         self.test[seqNum % buffer_size] = 'X'
                         self.dropped_count += 1
