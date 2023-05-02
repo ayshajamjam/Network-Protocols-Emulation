@@ -39,6 +39,7 @@ class Node:
 
     def nodeListen(self, cond):
 
+
         # Need to declare a new socket bc socket is already being used to send
         node_listen_socket = socket(AF_INET, SOCK_DGRAM)
         node_listen_socket.bind(('', self.self_port))
@@ -59,7 +60,7 @@ class Node:
                 data = lines[2]
                 # Deterministic packet dropping
                 if(self.drop_method == '-d'):
-                    if(seqNum == -1):
+                    if(self.packets_received < 3 and seqNum == 1):
                         print(">>> Dropping packet: ", seqNum)
                         self.test[seqNum % buffer_size] = 'X'
                         self.dropped_count += 1
@@ -79,11 +80,10 @@ class Node:
                         print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(seqNum), str(seqNum + 1)))
                 print(">>> Testing Buffer: ", self.test)
             elif(header == 'ack'):
-                global round2
                 seqNum = int(lines[1])
 
                 if(self.drop_method == '-d'):   # deterministic
-                    if(not round2 and (seqNum == 2 or seqNum == 3)):    # for testing
+                    if(not round2 and (seqNum == -1)):    # for testing
                         print("***Dropping an ack for packet: ", seqNum, "***")
                         self.test[seqNum % buffer_size] = 'X'
                         self.dropped_count += 1
