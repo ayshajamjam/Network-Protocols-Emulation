@@ -86,10 +86,12 @@ class Node:
                 if(self.drop_method == '-d'):   # deterministic
                     if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                     # if(not round2 and (seqNum == -1)):    # for testing
+                        lock.acquire()
                         print("***Dropping an ack for packet: ", seqNum, "***")
                         self.test[seqNum % buffer_size] = 'X'
                         self.dropped_count += 1
                         print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                        lock.release()
                     elif(self.last_acked_packet == seqNum):
                         print(('[{}] ACK packet: {} discarded').format(time.time(), seqNum))
                     else:
