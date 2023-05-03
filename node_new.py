@@ -63,14 +63,14 @@ class Node:
                 if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                 # if(self.packets_received < 3 and seqNum == 1):
                     print(">>> Dropping packet: ", seqNum)
-                    self.test[seqNum % buffer_size] = 'X'
+                    self.test[(self.last_acked_packet + 1) % buffer_size] = 'X'
                     self.dropped_count += 1
-                    print(("# Dropped PACKETS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(("[Summary] {}/{} packets discarded, loss rate = {}%").format(self.dropped_count, self.packets_received, float(self.dropped_count/self.packets_received)))
                 elif(self.drop_method == '-p' and random_num <= self.drop_value): # probabilistic
                     print("***Dropping packet: ", seqNum)
-                    self.test[seqNum % buffer_size] = 'X'
+                    self.test[(self.last_acked_packet + 1) % buffer_size] = 'X'
                     self.dropped_count += 1
-                    print(("# Dropped PACKETS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(("[Summary] {}/{} packets discarded, loss rate = {}%").format(self.dropped_count, self.packets_received, float(self.dropped_count/self.packets_received)))
                 elif(self.last_acked_packet != seqNum - 1):
                     print(("[{}] packet: {} content: {} discarded").format(time.time(), seqNum, data))
                     ack = 'ack\t' + str(self.last_acked_packet)
@@ -80,7 +80,7 @@ class Node:
                     # everything went smoothly, send ack
                     print(("[{}] packet: {} content: {} received").format(time.time(), seqNum, data))
                     ack = 'ack\t' + str(seqNum)
-                    self.test[seqNum % buffer_size] = data
+                    self.test[(self.last_acked_packet + 1) % buffer_size] = data
                     self.last_acked_packet += 1
                     node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
                     print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(seqNum), str(seqNum + 1)))
@@ -91,17 +91,17 @@ class Node:
                 # if(self.drop_method == '-d' and not round2 and (seqNum == 9)):    # for testing
                     lock.acquire()
                     print("***Dropping an ack for packet: ", seqNum, "***")
-                    self.test[seqNum % buffer_size] = 'X'
+                    self.test[(self.last_acked_packet + 1) % buffer_size] = 'X'
                     self.dropped_count += 1
-                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(("[Summary] {}/{} acks discarded, loss rate = {}%").format(self.dropped_count, self.packets_received, float(self.dropped_count/self.packets_received)))
                     print(">>> Testing Buffer: ", self.test)
                     lock.release()
                 elif(self.drop_method == '-p' and random_num <= self.drop_value): # probabilistic
                     lock.acquire()
                     print("***Dropping an ack for packet: ", seqNum, "***")
-                    self.test[seqNum % buffer_size] = 'X'
+                    self.test[(self.last_acked_packet + 1 )% buffer_size] = 'X'
                     self.dropped_count += 1
-                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(("[Summary] {}/{} acks discarded, loss rate = {}%").format(self.dropped_count, self.packets_received, float(self.dropped_count/self.packets_received)))
                     print(">>> Testing Buffer: ", self.test)
                     lock.release()
                 elif(self.last_acked_packet == seqNum):
@@ -137,19 +137,20 @@ class Node:
             if val:
                 print("Ack received")
             else:
-                print("Timeout- resend all packets in window")
+                print("Timeout- resend all packets in window: ", (self.window_start, self.next_option))
                 print("Last acked packet: ", self.last_acked_packet)
                 round2 = True
                 if(self.window_start < self.next_option):
                     for i in range(self.window_start, self.next_option):
-                        packet = 'data\t' + str(i) + '\t' + self.sending_buffer[i][1]
+                        packet = 'data\t' + str(self.sending_buffer[i][0]) + '\t' + self.sending_buffer[i][1]
                         node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
-                        print(("[{}] packet: {} content: {} REsent").format(time.time(), i, self.sending_buffer[i][1]))
+                        print(("[{}] packet: {} content: {} REsent").format(time.time(), self.sending_buffer[i][0], self.sending_buffer[i][1]))
                 elif(self.window_start > self.next_option):   # deals with wrap around case where window_start is at end of buffer and next_option is at the start
                     for i in range(self.window_start, self.next_option + buffer_size):
-                        packet = 'data\t' + str(i) + '\t' + self.sending_buffer[i][1]
+                        print("Pay attention: ", i)
+                        packet = 'data\t' + str(self.sending_buffer[i % buffer_size][0]) + '\t' + self.sending_buffer[i % buffer_size][1]
                         node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
-                        print(("[{}] packet: {} content: {} REsent").format(time.time(), i, self.sending_buffer[i][1]))
+                        print(("[{}] packet: {} content: {} REsent").format(time.time(), self.sending_buffer[i % buffer_size][0], self.sending_buffer[i % buffer_size][1]))
 
         cond.release()
         
@@ -192,7 +193,8 @@ class Node:
             while (i < len(message)) and self.last_acked_packet < len(message) - 1:
 
                 # check if next_option - start_window < window_size
-                if(self.next_option - self.window_start < self.window_size):
+                if((self.next_option >= self.window_start and self.next_option - self.window_start < self.window_size)
+                or (self.next_option < self.window_start and (self.next_option + buffer_size) - self.window_start < self.window_size)):
 
                     packet = 'data\t' + str(i) + '\t' + message[i]
                     
