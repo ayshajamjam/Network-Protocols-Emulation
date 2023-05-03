@@ -140,7 +140,7 @@ class Node:
             if val:
                 print("Ack received")
             else:
-                print("Timeout- resend all packets in window: ", (self.window_start, self.next_option))
+                print("Timeout- resend all packets in window: ", (self.window_start, self.next_option - 1))
                 print("Last acked packet: ", self.last_acked_packet)
                 if(self.window_start < self.next_option):
                     for i in range(self.window_start, self.next_option):
