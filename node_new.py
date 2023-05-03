@@ -53,6 +53,7 @@ class Node:
             lines = buffer.split('\t')
 
             header = lines[0]
+            random_num = float(randint(1, 100)/100) # (0,1]
 
             # Receiver got data
             if(header == 'data'):
@@ -62,6 +63,11 @@ class Node:
                 if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                 # if(self.packets_received < 3 and seqNum == 1):
                     print(">>> Dropping packet: ", seqNum)
+                    self.test[seqNum % buffer_size] = 'X'
+                    self.dropped_count += 1
+                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                elif(self.drop_method == '-p' and random_num <= self.drop_value): # probabilistic
+                    print("***Dropping packet: ", seqNum)
                     self.test[seqNum % buffer_size] = 'X'
                     self.dropped_count += 1
                     print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
@@ -81,9 +87,8 @@ class Node:
                 print(">>> Testing Buffer: ", self.test)
             elif(header == 'ack'):
                 seqNum = int(lines[1])
-                random_num = float(randint(1, 100)/100) # (0,1]
                 if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                # if(not round2 and (seqNum == 1)):    # for testing
+                # if(self.drop_method == '-d' and not round2 and (seqNum == 1 or seqNum == 2)):    # for testing
                     lock.acquire()
                     print("***Dropping an ack for packet: ", seqNum, "***")
                     self.test[seqNum % buffer_size] = 'X'
