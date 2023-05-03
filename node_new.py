@@ -10,7 +10,7 @@ from threading import Condition
 
 
 IP = '127.0.0.1'
-buffer_size = 100
+buffer_size = 1200
 lock = threading.Lock()
 round2 = False
 
@@ -65,12 +65,12 @@ class Node:
                     print(">>> Dropping packet: ", seqNum)
                     self.test[seqNum % buffer_size] = 'X'
                     self.dropped_count += 1
-                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(("# Dropped PACKETS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
                 elif(self.drop_method == '-p' and random_num <= self.drop_value): # probabilistic
                     print("***Dropping packet: ", seqNum)
                     self.test[seqNum % buffer_size] = 'X'
                     self.dropped_count += 1
-                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(("# Dropped PACKETS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
                 elif(self.last_acked_packet != seqNum - 1):
                     print(("[{}] packet: {} content: {} discarded").format(time.time(), seqNum, data))
                     ack = 'ack\t' + str(self.last_acked_packet)
