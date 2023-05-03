@@ -10,7 +10,7 @@ from threading import Condition
 
 
 IP = '127.0.0.1'
-buffer_size = 1200
+buffer_size = 10
 lock = threading.Lock()
 round2 = False
 
@@ -88,7 +88,7 @@ class Node:
             elif(header == 'ack'):
                 seqNum = int(lines[1])
                 if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                # if(self.drop_method == '-d' and not round2 and (seqNum == 1 or seqNum == 2)):    # for testing
+                # if(self.drop_method == '-d' and not round2 and (seqNum == 9)):    # for testing
                     lock.acquire()
                     print("***Dropping an ack for packet: ", seqNum, "***")
                     self.test[seqNum % buffer_size] = 'X'
@@ -140,10 +140,17 @@ class Node:
                 print("Timeout- resend all packets in window")
                 print("Last acked packet: ", self.last_acked_packet)
                 round2 = True
-                for i in range(self.window_start, self.next_option):
-                    packet = 'data\t' + str(i) + '\t' + self.sending_buffer[i][1]
-                    node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
-                    print(("[{}] packet: {} content: {} REsent").format(time.time(), i, self.sending_buffer[i][1]))
+                if(self.window_start < self.next_option):
+                    for i in range(self.window_start, self.next_option):
+                        packet = 'data\t' + str(i) + '\t' + self.sending_buffer[i][1]
+                        node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                        print(("[{}] packet: {} content: {} REsent").format(time.time(), i, self.sending_buffer[i][1]))
+                elif(self.window_start > self.next_option):   # deals with wrap around case where window_start is at end of buffer and next_option is at the start
+                    for i in range(self.window_start, self.next_option + buffer_size):
+                        packet = 'data\t' + str(i) + '\t' + self.sending_buffer[i][1]
+                        node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
+                        print(("[{}] packet: {} content: {} REsent").format(time.time(), i, self.sending_buffer[i][1]))
+
         cond.release()
         
     def nodeSend(self):
