@@ -10,7 +10,7 @@ from threading import Condition
 
 
 IP = '127.0.0.1'
-buffer_size = 10
+buffer_size = 0
 lock = threading.Lock()
 round2 = False
 
@@ -22,6 +22,9 @@ def getMessage(input_list):
 
 class Node:
     def __init__(self, self_port, peer_port, window_size, drop_method, drop_value):
+        global buffer_size
+        buffer_size = window_size + 1
+
         self.self_port = self_port
         self.peer_port = peer_port
         self.window_size = window_size
@@ -38,6 +41,7 @@ class Node:
         self.next_option = 0
 
         self.message_length = 0
+
 
     def nodeListen(self, cond):
 
@@ -65,12 +69,12 @@ class Node:
                 if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                 # if(self.packets_received < 3 and seqNum == 1):
                     # print(">>> Dropping packet: ", seqNum)
-                    print(("[{}] packet: {} content: {} discarded").format(time.time(), seqNum, data))
+                    print(("[{}] packet: {} content: {} dropped").format(time.time(), seqNum, data))
                     self.test[(self.last_acked_packet + 1) % buffer_size] = 'X'
                     self.dropped_count += 1
                 elif(self.drop_method == '-p' and random_num <= self.drop_value): # probabilistic
                     # print("***Dropping packet: ", seqNum)
-                    print(("[{}] packet: {} content: {} discarded").format(time.time(), seqNum, data))
+                    print(("[{}] packet: {} content: {} dropped").format(time.time(), seqNum, data))
                     self.test[(self.last_acked_packet + 1) % buffer_size] = 'X'
                     self.dropped_count += 1
                 elif(self.last_acked_packet != seqNum - 1):
@@ -94,6 +98,7 @@ class Node:
                 if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
                 # if(self.drop_method == '-d' and not round2 and (seqNum == 9)):    # for testing
                     lock.acquire()
+                    print(("[{}] ack: {} dropped").format(time.time(), seqNum))
                     # print("***Dropping an ack for packet: ", seqNum, "***")
                     self.test[(self.last_acked_packet + 1) % buffer_size] = 'X'
                     self.dropped_count += 1
@@ -101,6 +106,7 @@ class Node:
                     lock.release()
                 elif(self.drop_method == '-p' and random_num <= self.drop_value): # probabilistic
                     lock.acquire()
+                    print(("[{}] ack: {} dropped").format(time.time(), seqNum))
                     # print("***Dropping an ack for packet: ", seqNum, "***")
                     self.test[(self.last_acked_packet + 1 )% buffer_size] = 'X'
                     self.dropped_count += 1
@@ -117,7 +123,7 @@ class Node:
                     lock.acquire()
                     # Move the window to most recent ack seq
                     self.window_start = (seqNum + 1) % buffer_size
-                    print(('[{}] ACK packet: {} received, window moves to packet: {}').format(time.time(), seqNum, self.window_start))
+                    print(('[{}] ACK packet: {} received, window moves to: {}').format(time.time(), seqNum, seqNum + 1))
                     while(self.last_acked_packet < seqNum):
                         self.test[(self.last_acked_packet + 1) % buffer_size] = 'ack: ' + str(self.last_acked_packet + 1)
                         self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
@@ -137,15 +143,13 @@ class Node:
             if(self.sending_buffer == [None] * buffer_size):
                 continue
             val = cond.wait(.5)
-            if val:
-                print("Ack received")
-            else:
-                print("Timeout- resend all packets in window: ", (self.window_start, self.next_option - 1))
-                print("Last acked packet: ", self.last_acked_packet)
+            if not val:
+                print(("[{}] packet: {} timeout, resend all packets in window: {}").format(time.time(), self.window_start, (self.window_start, self.next_option - 1)))
+                # print("Last acked packet: ", self.last_acked_packet)
                 if(self.window_start < self.next_option):
                     for i in range(self.window_start, self.next_option):
                         endFlag = 0
-                        if(i == (self.message_length - 1) % buffer_size):
+                        if(self.sending_buffer[i % buffer_size][0] == (self.message_length - 1)):
                             endFlag = 1
                         packet = 'data\t' + str(self.sending_buffer[i][0]) + '\t' + self.sending_buffer[i][1] + '\t' + str(endFlag)
                         node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
@@ -153,7 +157,7 @@ class Node:
                 elif(self.window_start > self.next_option):   # deals with wrap around case where window_start is at end of buffer and next_option is at the start
                     for i in range(self.window_start, self.next_option + buffer_size):
                         endFlag = 0
-                        if(i == (self.message_length - 1) % buffer_size):
+                        if(self.sending_buffer[i % buffer_size][0] == (self.message_length - 1)):
                             endFlag = 1
                         packet = 'data\t' + str(self.sending_buffer[i % buffer_size][0]) + '\t' + self.sending_buffer[i % buffer_size][1] + '\t' + str(endFlag)
                         node_send_socket.sendto(packet.encode(), (IP, self.peer_port))
@@ -210,7 +214,7 @@ class Node:
                     
                     # Add packet to sending buffer
                     lock.acquire()
-                    self.sending_buffer[i % buffer_size] = (i, message[i])  # TODO: fix
+                    self.sending_buffer[i % buffer_size] = (i, message[i])
                     self.next_option = (self.next_option + 1) % buffer_size
                     lock.release()
 
@@ -219,6 +223,6 @@ class Node:
                     print(("[{}] packet: {} content: {} sent").format(time.time(), i, message[i]))
 
                     # print(self.sending_buffer)
-                    # print(self.window_start, ' ', self.next_option)
+                    # print(self.window_start, ' ', self.next_option - 1)
 
                     i += 1
