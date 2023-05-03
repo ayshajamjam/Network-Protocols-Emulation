@@ -50,17 +50,17 @@ class DvNode:
         node_listen_socket.bind(('', self.local_port))
         
         while True:
-            print("AAAAAAAA: ", self.local_port)
+            # print("AAAAAAAA: ", self.local_port)
             buffer, sender_address = node_listen_socket.recvfrom(4096)
-            print("BBBBBBBB: ", self.local_port)
+            # print("BBBBBBBB: ", self.local_port)
             buffer = buffer.decode()
-            print("CCCCCCCC: ", self.local_port)
+            # print("CCCCCCCC: ", self.local_port)
 
 
             split_msg = buffer.split('\n')
             print(split_msg)
             sender_port = int(split_msg[0])
-            dv_res = ast.literal_eval(split_msg[1])   # converts strin containing dv vector to dict
+            dv_res = ast.literal_eval(split_msg[1])   # converts string containing dv vector to dict
             print(("\n[{}] Message received at Node {} from Node {}").format(time.time(), self.local_port, sender_port))
             print("Message: ", dv_res)
 
@@ -124,8 +124,8 @@ class DvNode:
                 print(old_dv)
                 print(self.dv)
 
-                # print('\nFinal routing table')
-                # self.print_routing_table()
+                print('\nFinal routing table')
+                self.print_routing_table()
 
     def nodeSend(self):
         # Create UDP socket
