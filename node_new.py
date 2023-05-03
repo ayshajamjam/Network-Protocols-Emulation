@@ -10,7 +10,7 @@ from threading import Condition
 
 
 IP = '127.0.0.1'
-buffer_size = 10
+buffer_size = 100
 lock = threading.Lock()
 round2 = False
 
@@ -59,58 +59,67 @@ class Node:
                 seqNum = int(lines[1])
                 data = lines[2]
                 # Deterministic packet dropping
-                if(self.drop_method == '-d'):
-                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                    # if(self.packets_received < 3 and seqNum == 1):
-                        print(">>> Dropping packet: ", seqNum)
-                        self.test[seqNum % buffer_size] = 'X'
-                        self.dropped_count += 1
-                        print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
-                    elif(self.last_acked_packet != seqNum - 1):
-                        print(("[{}] packet: {} content: {} discarded").format(time.time(), seqNum, data))
-                        ack = 'ack\t' + str(self.last_acked_packet)
-                        node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
-                        print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(self.last_acked_packet), str(self.last_acked_packet + 1)))
-                    else:
-                        # everything went smoothly, send ack
-                        print(("[{}] packet: {} content: {} received").format(time.time(), seqNum, data))
-                        ack = 'ack\t' + str(seqNum)
-                        self.test[seqNum % buffer_size] = data
-                        self.last_acked_packet += 1
-                        node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
-                        print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(seqNum), str(seqNum + 1)))
+                if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                # if(self.packets_received < 3 and seqNum == 1):
+                    print(">>> Dropping packet: ", seqNum)
+                    self.test[seqNum % buffer_size] = 'X'
+                    self.dropped_count += 1
+                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                elif(self.last_acked_packet != seqNum - 1):
+                    print(("[{}] packet: {} content: {} discarded").format(time.time(), seqNum, data))
+                    ack = 'ack\t' + str(self.last_acked_packet)
+                    node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
+                    print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(self.last_acked_packet), str(self.last_acked_packet + 1)))
+                else:
+                    # everything went smoothly, send ack
+                    print(("[{}] packet: {} content: {} received").format(time.time(), seqNum, data))
+                    ack = 'ack\t' + str(seqNum)
+                    self.test[seqNum % buffer_size] = data
+                    self.last_acked_packet += 1
+                    node_listen_socket.sendto(ack.encode(), (IP, self.peer_port))
+                    print(("[{}] ACK: {} sent, expecting {}").format(time.time(), str(seqNum), str(seqNum + 1)))
                 print(">>> Testing Buffer: ", self.test)
             elif(header == 'ack'):
                 seqNum = int(lines[1])
+                random_num = float(randint(1, 100)/100) # (0,1]
+                if(self.drop_method == '-d' and self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
+                # if(not round2 and (seqNum == 1)):    # for testing
+                    lock.acquire()
+                    print("***Dropping an ack for packet: ", seqNum, "***")
+                    self.test[seqNum % buffer_size] = 'X'
+                    self.dropped_count += 1
+                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(">>> Testing Buffer: ", self.test)
+                    lock.release()
+                elif(self.drop_method == '-p' and random_num <= self.drop_value): # probabilistic
+                    lock.acquire()
+                    print("***Dropping an ack for packet: ", seqNum, "***")
+                    self.test[seqNum % buffer_size] = 'X'
+                    self.dropped_count += 1
+                    print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
+                    print(">>> Testing Buffer: ", self.test)
+                    lock.release()
+                elif(self.last_acked_packet == seqNum):
+                    print(('[{}] ACK packet: {} discarded').format(time.time(), seqNum))
+                    print(">>> Testing Buffer: ", self.test)
+                else:
+                    cond.acquire()
+                    cond.notify()
+                    cond.release()
 
-                if(self.drop_method == '-d'):   # deterministic
-                    if(self.drop_value > 0 and (seqNum + 1) % self.drop_value == 0):
-                    # if(not round2 and (seqNum == -1)):    # for testing
-                        lock.acquire()
-                        print("***Dropping an ack for packet: ", seqNum, "***")
-                        self.test[seqNum % buffer_size] = 'X'
-                        self.dropped_count += 1
-                        print(("# Dropped ACKS / # received --- {}/{}: ").format(self.dropped_count, self.packets_received))
-                        lock.release()
-                    elif(self.last_acked_packet == seqNum):
-                        print(('[{}] ACK packet: {} discarded').format(time.time(), seqNum))
-                    else:
-                        cond.acquire()
-                        cond.notify()
-                        cond.release()
-
-                        lock.acquire()
-                        # Move the window to most recent ack seq
-                        self.window_start = (seqNum + 1) % buffer_size
-                        print(('[{}] ACK packet: {} received, window moves to packet: {}').format(time.time(), seqNum, self.window_start))
-                        while(self.last_acked_packet < seqNum):
-                            self.test[(self.last_acked_packet + 1) % buffer_size] = 'ack: ' + str(self.last_acked_packet + 1)
-                            self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
-                            print(self.sending_buffer)
-                            self.last_acked_packet += 1
-                        print(self.window_start, ' ', self.next_option)
-                        lock.release()
-                print(">>> Testing Buffer: ", self.test)
+                    lock.acquire()
+                    # Move the window to most recent ack seq
+                    self.window_start = (seqNum + 1) % buffer_size
+                    print(('[{}] ACK packet: {} received, window moves to packet: {}').format(time.time(), seqNum, self.window_start))
+                    while(self.last_acked_packet < seqNum):
+                        self.test[(self.last_acked_packet + 1) % buffer_size] = 'ack: ' + str(self.last_acked_packet + 1)
+                        self.sending_buffer[(self.last_acked_packet + 1) % buffer_size] = None
+                        print(self.sending_buffer)
+                        self.last_acked_packet += 1
+                    print(self.window_start, ' ', self.next_option)
+                    print(">>> Testing Buffer: ", self.test)
+                    lock.release()
+                # print(">>> Testing Buffer: ", self.test)
 
     def timer(self, cond, node_send_socket):
         global round2
@@ -119,7 +128,7 @@ class Node:
         while True:
             if(self.sending_buffer == [None] * buffer_size):
                 continue
-            val = cond.wait(3)
+            val = cond.wait(.5)
             if val:
                 print("Ack received")
             else:
