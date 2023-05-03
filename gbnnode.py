@@ -4,7 +4,7 @@ import threading
 import sys
 import json
 from checks import *
-from node_new import *
+from node import *
 
 if __name__ == "__main__":
     
