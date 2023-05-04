@@ -1,0 +1,991 @@
+﻿Node 1111:
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 cnnode.py 1111 receive send 2222 3333
+Local port:  1111
+Neighbor ports:  {3333, 2222}
+Distance vector:  {2222: 0, 3333: 0}
+Last:  0
+[1683158536.2935739] Node 1111 Routing Table
+- (0) --> Node 3333
+- (0) --> Node 2222
+[1683158539.295294] Message received at Node 1111 from Node 3333
+Message:  {1111: 0.5, 2222: 0.2, 4444: 0}
+[1683158539.295365] Node 1111 Routing Table
+- (0) --> Node 3333
+- (0) --> Node 2222
+- (0) --> Node 4444; Next hop --> Node 3333
+[1683158539.295393] Message sent from Node 1111 to Node 3333
+[1683158539.295428] Message sent from Node 1111 to Node 2222
+>>PROBING 2222
+[1683158539.2954738] probing packet 0 sent from 1111 to 2222
+[1683158539.2954938] probing packet 1 sent from 1111 to 2222
+[1683158539.2955189] probing packet 2 sent from 1111 to 2222
+[1683158539.295538] probing packet 3 sent from 1111 to 2222
+[1683158539.295555] probing packet 4 sent from 1111 to 2222
+[1683158539.2955709] probing packet 5 sent from 1111 to 2222
+[1683158539.295588] probing packet 6 sent from 1111 to 2222
+[1683158539.295606] probing packet 7 sent from 1111 to 2222
+[1683158539.2956219] probing packet 8 sent from 1111 to 2222
+[1683158539.295637] probing packet 9 sent from 1111 to 2222
+>>PROBING 3333
+[1683158539.295659] probing packet 0 sent from 1111 to 3333
+[1683158539.296319] probing packet 1 sent from 1111 to 3333
+[1683158539.296347] probing packet 2 sent from 1111 to 3333
+[1683158539.2963672] probing packet 3 sent from 1111 to 3333
+[1683158539.296386] probing packet 4 sent from 1111 to 3333
+[1683158539.296406] probing packet 5 sent from 1111 to 3333
+[1683158539.296423] probing packet 6 sent from 1111 to 3333
+[1683158539.2964401] probing packet 7 sent from 1111 to 3333
+[1683158539.296459] probing packet 8 sent from 1111 to 3333
+[1683158539.296475] probing packet 9 sent from 1111 to 3333
+[1683158539.296557] Message received at Node 1111 from Node 2222
+Message:  {1111: 0.1, 3333: 0, 4444: 0}
+[1683158539.2966049] Node 1111 Routing Table
+- (0) --> Node 3333
+- (0) --> Node 2222
+- (0) --> Node 4444; Next hop --> Node 3333
+>>PROBING 2222
+[1683158539.296649] probing packet 0 sent from 1111 to 2222
+[1683158539.2966678] probing packet 1 sent from 1111 to 2222
+[1683158539.2966862] probing packet 2 sent from 1111 to 2222
+[1683158539.29895] probing packet 3 sent from 1111 to 2222
+[1683158539.299079] probing packet 4 sent from 1111 to 2222
+[1683158539.299173] probing packet 5 sent from 1111 to 2222
+[1683158539.299245] probing packet 6 sent from 1111 to 2222
+[1683158539.29933] probing packet 7 sent from 1111 to 2222
+[1683158539.2993731] probing packet 8 sent from 1111 to 2222
+[1683158539.299405] probing packet 9 sent from 1111 to 2222
+>>PROBING 3333
+[1683158539.299445] probing packet 0 sent from 1111 to 3333
+[1683158539.299476] probing packet 1 sent from 1111 to 3333
+[1683158539.299527] probing packet 2 sent from 1111 to 3333
+[1683158539.299547] probing packet 3 sent from 1111 to 3333
+[1683158539.2995641] probing packet 4 sent from 1111 to 3333
+[1683158539.299582] probing packet 5 sent from 1111 to 3333
+[1683158539.299602] probing packet 6 sent from 1111 to 3333
+[1683158539.299619] probing packet 7 sent from 1111 to 3333
+[1683158539.299637] probing packet 8 sent from 1111 to 3333
+[1683158539.299653] probing packet 9 sent from 1111 to 3333
+[1683158539.2997491] Message received at Node 1111 from Node 3333
+Message:  {1111: 0.3, 2222: 0.2, 4444: 0}
+[1683158539.299793] Node 1111 Routing Table
+- (0) --> Node 3333
+- (0) --> Node 2222
+- (0) --> Node 4444; Next hop --> Node 3333
+>>PROBING 2222
+[1683158539.299836] probing packet 0 sent from 1111 to 2222
+[1683158539.299857] probing packet 1 sent from 1111 to 2222
+[1683158539.299874] probing packet 2 sent from 1111 to 2222
+[1683158539.2998888] probing packet 3 sent from 1111 to 2222
+[1683158539.299904] probing packet 4 sent from 1111 to 2222
+[1683158539.2999182] probing packet 5 sent from 1111 to 2222
+[1683158539.299932] probing packet 6 sent from 1111 to 2222
+[1683158539.299946] probing packet 7 sent from 1111 to 2222
+[1683158539.2999601] probing packet 8 sent from 1111 to 2222
+[1683158539.2999759] probing packet 9 sent from 1111 to 2222
+>>PROBING 3333
+[1683158539.299998] probing packet 0 sent from 1111 to 3333
+[1683158539.3000152] probing packet 1 sent from 1111 to 3333
+[1683158539.300033] probing packet 2 sent from 1111 to 3333
+[1683158539.300051] probing packet 3 sent from 1111 to 3333
+[1683158539.300069] probing packet 4 sent from 1111 to 3333
+[1683158539.30086] probing packet 5 sent from 1111 to 3333
+[1683158539.30088] probing packet 6 sent from 1111 to 3333
+[1683158539.3009238] probing packet 7 sent from 1111 to 3333
+[1683158539.300938] probing packet 8 sent from 1111 to 3333
+[1683158539.30095] probing packet 9 sent from 1111 to 3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  3333
+Ack received from:  2222
+Ack received from:  3333
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  3333
+Ack received from:  2222
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+Ack received from:  2222
+
+
+Node 2222:
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 cnnode.py 2222 receive 1111 .1 send 3333 4444
+Local port:  2222
+Neighbor ports:  {4444, 3333, 1111}
+Distance vector:  {1111: 0.1, 3333: 0, 4444: 0}
+Last:  0
+[1683158537.4949088] Node 2222 Routing Table
+- (0) --> Node 4444
+- (0) --> Node 3333
+- (0.1) --> Node 1111
+[1683158539.2947369] Message received at Node 2222 from Node 4444
+Message:  {2222: 0.8, 3333: 0.5}
+[1683158539.2948391] Node 2222 Routing Table
+- (0) --> Node 4444
+- (0) --> Node 3333
+- (0.1) --> Node 1111
+[1683158539.294869] Message sent from Node 2222 to Node 4444
+[1683158539.2949162] Message sent from Node 2222 to Node 3333
+[1683158539.294948] Message sent from Node 2222 to Node 1111
+>>PROBING 3333
+[1683158539.295069] probing packet 0 sent from 2222 to 3333
+[1683158539.295103] probing packet 1 sent from 2222 to 3333
+[1683158539.2951329] probing packet 2 sent from 2222 to 3333
+[1683158539.295167] probing packet 3 sent from 2222 to 3333
+[1683158539.295216] probing packet 4 sent from 2222 to 3333
+[1683158539.295249] probing packet 5 sent from 2222 to 3333
+[1683158539.29527] probing packet 6 sent from 2222 to 3333
+[1683158539.295297] probing packet 7 sent from 2222 to 3333
+[1683158539.295325] probing packet 8 sent from 2222 to 3333
+[1683158539.295344] probing packet 9 sent from 2222 to 3333
+>>PROBING 4444
+[1683158539.295375] probing packet 0 sent from 2222 to 4444
+[1683158539.2953951] probing packet 1 sent from 2222 to 4444
+[1683158539.29542] probing packet 2 sent from 2222 to 4444
+[1683158539.2954502] probing packet 3 sent from 2222 to 4444
+[1683158539.29548] probing packet 4 sent from 2222 to 4444
+[1683158539.2957] probing packet 5 sent from 2222 to 4444
+[1683158539.295719] probing packet 6 sent from 2222 to 4444
+[1683158539.2959108] probing packet 7 sent from 2222 to 4444
+[1683158539.295936] probing packet 8 sent from 2222 to 4444
+[1683158539.2959528] probing packet 9 sent from 2222 to 4444
+[1683158539.296059] Message received at Node 2222 from Node 3333
+Message:  {1111: 0.5, 2222: 0.2, 4444: 0}
+[1683158539.296112] Node 2222 Routing Table
+- (0) --> Node 4444
+- (0) --> Node 3333
+- (0.1) --> Node 1111
+>>PROBING 3333
+[1683158539.296157] probing packet 0 sent from 2222 to 3333
+[1683158539.296174] probing packet 1 sent from 2222 to 3333
+[1683158539.2961888] probing packet 2 sent from 2222 to 3333
+[1683158539.296203] probing packet 3 sent from 2222 to 3333
+[1683158539.2962172] probing packet 4 sent from 2222 to 3333
+[1683158539.296232] probing packet 5 sent from 2222 to 3333
+[1683158539.296245] probing packet 6 sent from 2222 to 3333
+[1683158539.29626] probing packet 7 sent from 2222 to 3333
+[1683158539.2962759] probing packet 8 sent from 2222 to 3333
+[1683158539.296293] probing packet 9 sent from 2222 to 3333
+>>PROBING 4444
+[1683158539.2988641] probing packet 0 sent from 2222 to 4444
+[1683158539.298917] probing packet 1 sent from 2222 to 4444
+[1683158539.298956] probing packet 2 sent from 2222 to 4444
+[1683158539.2989938] probing packet 3 sent from 2222 to 4444
+[1683158539.299026] probing packet 4 sent from 2222 to 4444
+[1683158539.299058] probing packet 5 sent from 2222 to 4444
+[1683158539.299089] probing packet 6 sent from 2222 to 4444
+[1683158539.2991219] probing packet 7 sent from 2222 to 4444
+[1683158539.2991529] probing packet 8 sent from 2222 to 4444
+[1683158539.299186] probing packet 9 sent from 2222 to 4444
+[1683158539.299337] Message received at Node 2222 from Node 4444
+Message:  {2222: 0.7, 3333: 0.5, 1111: 1.0}
+[1683158539.299396] Node 2222 Routing Table
+- (0) --> Node 4444
+- (0) --> Node 3333
+- (0.1) --> Node 1111
+>>PROBING 3333
+[1683158539.2994401] probing packet 0 sent from 2222 to 3333
+[1683158539.299459] probing packet 1 sent from 2222 to 3333
+[1683158539.299523] probing packet 2 sent from 2222 to 3333
+[1683158539.299563] probing packet 3 sent from 2222 to 3333
+[1683158539.299593] probing packet 4 sent from 2222 to 3333
+[1683158539.2996259] probing packet 5 sent from 2222 to 3333
+[1683158539.299662] probing packet 6 sent from 2222 to 3333
+[1683158539.299684] probing packet 7 sent from 2222 to 3333
+[1683158539.29971] probing packet 8 sent from 2222 to 3333
+[1683158539.299739] probing packet 9 sent from 2222 to 3333
+>>PROBING 4444
+[1683158539.299777] probing packet 0 sent from 2222 to 4444
+[1683158539.299815] probing packet 1 sent from 2222 to 4444
+[1683158539.299847] probing packet 2 sent from 2222 to 4444
+[1683158539.299895] probing packet 3 sent from 2222 to 4444
+[1683158539.2999392] probing packet 4 sent from 2222 to 4444
+[1683158539.299981] probing packet 5 sent from 2222 to 4444
+[1683158539.300012] probing packet 6 sent from 2222 to 4444
+[1683158539.300045] probing packet 7 sent from 2222 to 4444
+[1683158539.3000782] probing packet 8 sent from 2222 to 4444
+[1683158539.3001] probing packet 9 sent from 2222 to 4444
+[1683158539.300169] Message received at Node 2222 from Node 1111
+Message:  {2222: 0, 3333: 0, 4444: 0}
+[1683158539.300201] Node 2222 Routing Table
+- (0) --> Node 4444
+- (0) --> Node 3333
+- (0.1) --> Node 1111
+>>PROBING 3333
+[1683158539.3002298] probing packet 0 sent from 2222 to 3333
+[1683158539.300242] probing packet 1 sent from 2222 to 3333
+[1683158539.300252] probing packet 2 sent from 2222 to 3333
+[1683158539.300871] probing packet 3 sent from 2222 to 3333
+[1683158539.300908] probing packet 4 sent from 2222 to 3333
+[1683158539.300936] probing packet 5 sent from 2222 to 3333
+[1683158539.300986] probing packet 6 sent from 2222 to 3333
+[1683158539.3010812] probing packet 7 sent from 2222 to 3333
+[1683158539.30114] probing packet 8 sent from 2222 to 3333
+[1683158539.3011808] probing packet 9 sent from 2222 to 3333
+>>PROBING 4444
+[1683158539.301249] probing packet 0 sent from 2222 to 4444
+[1683158539.301295] probing packet 1 sent from 2222 to 4444
+[1683158539.3013299] probing packet 2 sent from 2222 to 4444
+[1683158539.3013601] probing packet 3 sent from 2222 to 4444
+[1683158539.301384] probing packet 4 sent from 2222 to 4444
+[1683158539.301402] probing packet 5 sent from 2222 to 4444
+[1683158539.301434] probing packet 6 sent from 2222 to 4444
+[1683158539.301453] probing packet 7 sent from 2222 to 4444
+[1683158539.30148] probing packet 8 sent from 2222 to 4444
+[1683158539.301512] probing packet 9 sent from 2222 to 4444
+[1683158539.301606] Message received at Node 2222 from Node 3333
+Message:  {1111: 0.3, 2222: 0.2, 4444: 0}
+[1683158539.301663] Node 2222 Routing Table
+- (0) --> Node 4444
+- (0) --> Node 3333
+- (0.1) --> Node 1111
+>>PROBING 3333
+[1683158539.3017302] probing packet 0 sent from 2222 to 3333
+[1683158539.301753] probing packet 1 sent from 2222 to 3333
+[1683158539.301781] probing packet 2 sent from 2222 to 3333
+[1683158539.301813] probing packet 3 sent from 2222 to 3333
+[1683158539.301842] probing packet 4 sent from 2222 to 3333
+[1683158539.3018749] probing packet 5 sent from 2222 to 3333
+[1683158539.301905] probing packet 6 sent from 2222 to 3333
+[1683158539.301933] probing packet 7 sent from 2222 to 3333
+[1683158539.301952] probing packet 8 sent from 2222 to 3333
+[1683158539.3019688] probing packet 9 sent from 2222 to 3333
+>>PROBING 4444
+[1683158539.3020642] probing packet 0 sent from 2222 to 4444
+[1683158539.302098] probing packet 1 sent from 2222 to 4444
+[1683158539.3021371] probing packet 2 sent from 2222 to 4444
+[1683158539.302158] probing packet 3 sent from 2222 to 4444
+[1683158539.302176] probing packet 4 sent from 2222 to 4444
+[1683158539.3021939] probing packet 5 sent from 2222 to 4444
+[1683158539.302228] probing packet 6 sent from 2222 to 4444
+[1683158539.302291] probing packet 7 sent from 2222 to 4444
+[1683158539.302324] probing packet 8 sent from 2222 to 4444
+[1683158539.3023438] probing packet 9 sent from 2222 to 4444
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+[1683158539.302458] packet dropped
+1/3 = 0.3333333333333333
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+[1683158539.302644] Message received at Node 2222 from Node 4444
+Message:  {2222: 0.7, 3333: 0.5, 1111: 0.8}
+[1683158539.302685] Node 2222 Routing Table
+- (0) --> Node 4444
+- (0) --> Node 3333
+- (0.1) --> Node 1111
+>>PROBING 3333
+[1683158539.302738] probing packet 0 sent from 2222 to 3333
+[1683158539.302759] probing packet 1 sent from 2222 to 3333
+[1683158539.302776] probing packet 2 sent from 2222 to 3333
+[1683158539.302798] probing packet 3 sent from 2222 to 3333
+[1683158539.3041332] probing packet 4 sent from 2222 to 3333
+[1683158539.304232] probing packet 5 sent from 2222 to 3333
+[1683158539.3042922] probing packet 6 sent from 2222 to 3333
+[1683158539.3043358] probing packet 7 sent from 2222 to 3333
+[1683158539.304383] probing packet 8 sent from 2222 to 3333
+[1683158539.3044312] probing packet 9 sent from 2222 to 3333
+>>PROBING 4444
+[1683158539.304488] probing packet 0 sent from 2222 to 4444
+[1683158539.304527] probing packet 1 sent from 2222 to 4444
+[1683158539.304571] probing packet 2 sent from 2222 to 4444
+[1683158539.3046122] probing packet 3 sent from 2222 to 4444
+[1683158539.30465] probing packet 4 sent from 2222 to 4444
+[1683158539.304675] probing packet 5 sent from 2222 to 4444
+[1683158539.304696] probing packet 6 sent from 2222 to 4444
+[1683158539.304714] probing packet 7 sent from 2222 to 4444
+[1683158539.304731] probing packet 8 sent from 2222 to 4444
+[1683158539.3047512] probing packet 9 sent from 2222 to 4444
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+[1683158539.305474] packet dropped
+2/10 = 0.2
+Probe packet received from  1111
+[1683158539.305526] packet dropped
+3/11 = 0.2727272727272727
+Probe packet received from  1111
+Probe packet received from  1111
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Probe packet received from  1111
+Probe packet received from  1111
+[1683158539.3058088] packet dropped
+4/21 = 0.19047619047619047
+Probe packet received from  1111
+Probe packet received from  1111
+[1683158539.3059] packet dropped
+5/23 = 0.21739130434782608
+Probe packet received from  1111
+Ack received from:  3333
+Probe packet received from  1111
+Ack received from:  3333
+Probe packet received from  1111
+Probe packet received from  1111
+Ack received from:  4444
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  4444
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+Ack received from:  3333
+
+
+Node 3333:
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 cnnode.py 3333 receive 1111 .5 2222 .2 send 4444
+Local port:  3333
+Neighbor ports:  {4444, 2222, 1111}
+Distance vector:  {1111: 0.5, 2222: 0.2, 4444: 0}
+Last:  0
+[1683158538.433662] Node 3333 Routing Table
+- (0) --> Node 4444
+- (0.2) --> Node 2222
+- (0.5) --> Node 1111
+[1683158539.294751] Message received at Node 3333 from Node 4444
+Message:  {2222: 0.8, 3333: 0.5}
+[1683158539.29484] Node 3333 Routing Table
+- (0) --> Node 4444
+- (0.2) --> Node 2222
+- (0.5) --> Node 1111
+[1683158539.294869] Message sent from Node 3333 to Node 4444
+[1683158539.294924] Message sent from Node 3333 to Node 2222
+[1683158539.294983] Message sent from Node 3333 to Node 1111
+>>PROBING 4444
+[1683158539.2950609] probing packet 0 sent from 3333 to 4444
+[1683158539.2950861] probing packet 1 sent from 3333 to 4444
+[1683158539.295115] probing packet 2 sent from 3333 to 4444
+[1683158539.295136] probing packet 3 sent from 3333 to 4444
+[1683158539.295156] probing packet 4 sent from 3333 to 4444
+[1683158539.295174] probing packet 5 sent from 3333 to 4444
+[1683158539.295192] probing packet 6 sent from 3333 to 4444
+[1683158539.29521] probing packet 7 sent from 3333 to 4444
+[1683158539.2952268] probing packet 8 sent from 3333 to 4444
+[1683158539.2952452] probing packet 9 sent from 3333 to 4444
+[1683158539.295336] Message received at Node 3333 from Node 2222
+Message:  {1111: 0.1, 3333: 0, 4444: 0}
+[1683158539.2953868] Node 3333 Routing Table
+- (0) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+[1683158539.295415] Message sent from Node 3333 to Node 4444
+[1683158539.295441] Message sent from Node 3333 to Node 2222
+[1683158539.295466] Message sent from Node 3333 to Node 1111
+>>PROBING 4444
+[1683158539.2957902] probing packet 0 sent from 3333 to 4444
+[1683158539.2958221] probing packet 1 sent from 3333 to 4444
+[1683158539.295842] probing packet 2 sent from 3333 to 4444
+[1683158539.295873] probing packet 3 sent from 3333 to 4444
+[1683158539.296664] probing packet 4 sent from 3333 to 4444
+[1683158539.296696] probing packet 5 sent from 3333 to 4444
+[1683158539.2967172] probing packet 6 sent from 3333 to 4444
+[1683158539.2967439] probing packet 7 sent from 3333 to 4444
+[1683158539.296768] probing packet 8 sent from 3333 to 4444
+[1683158539.2967832] probing packet 9 sent from 3333 to 4444
+Probe packet received from  2222
+[1683158539.2968252] packet dropped
+1/1 = 1.0
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.2969348] packet dropped
+2/6 = 0.3333333333333333
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.29705] Message received at Node 3333 from Node 4444
+Message:  {2222: 0.7, 3333: 0.5, 1111: 1.0}
+[1683158539.2988548] Node 3333 Routing Table
+- (0) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+>>PROBING 4444
+[1683158539.29896] probing packet 0 sent from 3333 to 4444
+[1683158539.2989938] probing packet 1 sent from 3333 to 4444
+[1683158539.2990248] probing packet 2 sent from 3333 to 4444
+[1683158539.299058] probing packet 3 sent from 3333 to 4444
+[1683158539.299089] probing packet 4 sent from 3333 to 4444
+[1683158539.299121] probing packet 5 sent from 3333 to 4444
+[1683158539.2991529] probing packet 6 sent from 3333 to 4444
+[1683158539.2991848] probing packet 7 sent from 3333 to 4444
+[1683158539.29922] probing packet 8 sent from 3333 to 4444
+[1683158539.299257] probing packet 9 sent from 3333 to 4444
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.299458] Message received at Node 3333 from Node 1111
+Message:  {2222: 0, 3333: 0, 4444: 0}
+[1683158539.299499] Node 3333 Routing Table
+- (0) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+>>PROBING 4444
+[1683158539.30004] probing packet 0 sent from 3333 to 4444
+[1683158539.3000698] probing packet 1 sent from 3333 to 4444
+[1683158539.300095] probing packet 2 sent from 3333 to 4444
+[1683158539.300119] probing packet 3 sent from 3333 to 4444
+[1683158539.300134] probing packet 4 sent from 3333 to 4444
+[1683158539.300148] probing packet 5 sent from 3333 to 4444
+[1683158539.3001611] probing packet 6 sent from 3333 to 4444
+[1683158539.3001752] probing packet 7 sent from 3333 to 4444
+[1683158539.3001878] probing packet 8 sent from 3333 to 4444
+[1683158539.300201] probing packet 9 sent from 3333 to 4444
+[1683158539.3002722] Message received at Node 3333 from Node 4444
+Message:  {2222: 0.7, 3333: 0.5, 1111: 0.8}
+[1683158539.3003032] Node 3333 Routing Table
+- (0) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+>>PROBING 4444
+[1683158539.300333] probing packet 0 sent from 3333 to 4444
+[1683158539.300344] probing packet 1 sent from 3333 to 4444
+[1683158539.3009799] probing packet 2 sent from 3333 to 4444
+[1683158539.3009999] probing packet 3 sent from 3333 to 4444
+[1683158539.301018] probing packet 4 sent from 3333 to 4444
+[1683158539.301035] probing packet 5 sent from 3333 to 4444
+[1683158539.301054] probing packet 6 sent from 3333 to 4444
+[1683158539.3010712] probing packet 7 sent from 3333 to 4444
+[1683158539.301087] probing packet 8 sent from 3333 to 4444
+[1683158539.3011022] probing packet 9 sent from 3333 to 4444
+Probe packet received from  1111
+Ack received from:  4444
+Ack received from:  4444
+Probe packet received from  1111
+[1683158539.301217] packet dropped
+3/14 = 0.21428571428571427
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.301333] packet dropped
+4/18 = 0.2222222222222222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  1111
+[1683158539.301589] packet dropped
+5/25 = 0.2
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+[1683158539.3016992] packet dropped
+6/29 = 0.20689655172413793
+Probe packet received from  1111
+[1683158539.301729] packet dropped
+7/30 = 0.23333333333333334
+Ack received from:  4444
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.302034] packet dropped
+8/36 = 0.2222222222222222
+Probe packet received from  1111
+[1683158539.302062] packet dropped
+9/37 = 0.24324324324324326
+Probe packet received from  2222
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  2222
+[1683158539.302254] packet dropped
+10/41 = 0.24390243902439024
+Probe packet received from  1111
+Probe packet received from  2222
+Probe packet received from  1111
+[1683158539.302343] packet dropped
+11/44 = 0.25
+Probe packet received from  1111
+[1683158539.302372] packet dropped
+12/45 = 0.26666666666666666
+Probe packet received from  2222
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  2222
+Probe packet received from  1111
+Probe packet received from  2222
+Probe packet received from  2222
+Ack received from:  4444
+Probe packet received from  2222
+Ack received from:  4444
+Ack received from:  4444
+Probe packet received from  1111
+Probe packet received from  1111
+Ack received from:  4444
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  1111
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  1111
+Probe packet received from  2222
+[1683158539.304936] packet dropped
+13/67 = 0.19402985074626866
+Probe packet received from  1111
+[1683158539.304975] packet dropped
+14/68 = 0.20588235294117646
+Probe packet received from  2222
+Probe packet received from  1111
+Probe packet received from  2222
+Probe packet received from  1111
+[1683158539.305108] packet dropped
+15/72 = 0.20833333333333334
+Probe packet received from  1111
+Probe packet received from  2222
+Probe packet received from  2222
+Ack received from:  4444
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.305341] packet dropped
+16/78 = 0.20512820512820512
+Ack received from:  4444
+Ack received from:  4444
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.305562] packet dropped
+17/85 = 0.2
+Probe packet received from  2222
+Probe packet received from  2222
+Ack received from:  4444
+Probe packet received from  2222
+[1683158539.3057191] packet dropped
+18/89 = 0.20224719101123595
+Probe packet received from  2222
+Ack received from:  4444
+Probe packet received from  2222
+[1683158539.305791] packet dropped
+19/92 = 0.20652173913043478
+Ack received from:  4444
+Ack received from:  4444
+Ack received from:  4444
+Ack received from:  4444
+Ack received from:  4444
+Ack received from:  4444
+Probe packet received from  2222
+[1683158539.305899] packet dropped
+20/99 = 0.20202020202020202
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+Ack received from:  4444
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.3060522] packet dropped
+21/105 = 0.2
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.3061619] packet dropped
+22/108 = 0.2037037037037037
+Probe packet received from  2222
+
+
+Node 4444:
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 cnnode.py  4444 receive 2222 .8 3333 .5 send last 
+Local port:  4444
+Neighbor ports:  {3333, 2222}
+Distance vector:  {2222: 0.8, 3333: 0.5}
+Last:  1
+[1683158539.2940679] Node 4444 Routing Table
+- (0.5) --> Node 3333
+- (0.8) --> Node 2222
+[1683158539.294297] Message sent from Node 4444 to Node 3333
+[1683158539.2944052] Message sent from Node 4444 to Node 2222
+[1683158539.29505] Message received at Node 4444 from Node 3333
+Message:  {1111: 0.5, 2222: 0.2, 4444: 0}
+[1683158539.2952168] Node 4444 Routing Table
+- (0.5) --> Node 3333
+- (0.7) --> Node 2222; Next hop --> Node 3333
+- (1.0) --> Node 1111; Next hop --> Node 3333
+[1683158539.295261] Message sent from Node 4444 to Node 3333
+[1683158539.2953112] Message sent from Node 4444 to Node 2222
+[1683158539.2954419] Message received at Node 4444 from Node 2222
+Message:  {1111: 0.1, 3333: 0, 4444: 0}
+[1683158539.295514] Node 4444 Routing Table
+- (0.5) --> Node 3333
+- (0.7) --> Node 2222; Next hop --> Node 3333
+- (0.8) --> Node 1111; Next hop --> Node 3333
+[1683158539.295543] Message sent from Node 4444 to Node 3333
+[1683158539.295569] Message sent from Node 4444 to Node 2222
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.295685] packet dropped
+1/2 = 0.5
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.295752] packet dropped
+2/4 = 0.5
+Probe packet received from  3333
+[1683158539.296264] packet dropped
+3/5 = 0.6
+Probe packet received from  3333
+[1683158539.2963068] packet dropped
+4/6 = 0.6666666666666666
+Probe packet received from  3333
+[1683158539.2963378] packet dropped
+5/7 = 0.7142857142857143
+Probe packet received from  3333
+[1683158539.296372] packet dropped
+6/8 = 0.75
+Probe packet received from  3333
+[1683158539.2963998] packet dropped
+7/9 = 0.7777777777777778
+Probe packet received from  3333
+Probe packet received from  2222
+[1683158539.296457] packet dropped
+8/11 = 0.7272727272727273
+Probe packet received from  2222
+[1683158539.296486] packet dropped
+9/12 = 0.75
+Probe packet received from  2222
+[1683158539.296512] packet dropped
+10/13 = 0.7692307692307693
+Probe packet received from  2222
+[1683158539.296536] packet dropped
+11/14 = 0.7857142857142857
+[1683158539.2966049] Message received at Node 4444 from Node 3333
+Message:  {1111: 0.3, 2222: 0.2, 4444: 0}
+[1683158539.2966452] Node 4444 Routing Table
+- (0.5) --> Node 3333
+- (0.7) --> Node 2222; Next hop --> Node 3333
+- (0.8) --> Node 1111; Next hop --> Node 3333
+Probe packet received from  2222
+[1683158539.299556] packet dropped
+12/15 = 0.8
+Probe packet received from  2222
+[1683158539.2996118] packet dropped
+13/16 = 0.8125
+Probe packet received from  2222
+[1683158539.299649] packet dropped
+14/17 = 0.8235294117647058
+Probe packet received from  3333
+[1683158539.299674] packet dropped
+15/18 = 0.8333333333333334
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.2997482] packet dropped
+16/20 = 0.8
+Probe packet received from  3333
+[1683158539.299808] packet dropped
+17/21 = 0.8095238095238095
+Probe packet received from  2222
+Probe packet received from  3333
+Probe packet received from  2222
+[1683158539.299901] packet dropped
+18/24 = 0.75
+Probe packet received from  2222
+[1683158539.299928] packet dropped
+19/25 = 0.76
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.299983] packet dropped
+20/27 = 0.7407407407407407
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.3000379] packet dropped
+21/29 = 0.7241379310344828
+Probe packet received from  3333
+[1683158539.300066] packet dropped
+22/30 = 0.7333333333333333
+Probe packet received from  2222
+[1683158539.300093] packet dropped
+23/31 = 0.7419354838709677
+Probe packet received from  2222
+[1683158539.30012] packet dropped
+24/32 = 0.75
+Probe packet received from  2222
+[1683158539.3001442] packet dropped
+25/33 = 0.7575757575757576
+Probe packet received from  3333
+[1683158539.300169] packet dropped
+26/34 = 0.7647058823529411
+Probe packet received from  2222
+[1683158539.301065] packet dropped
+27/35 = 0.7714285714285715
+Probe packet received from  3333
+Probe packet received from  2222
+[1683158539.30113] packet dropped
+28/37 = 0.7567567567567568
+Probe packet received from  3333
+[1683158539.3011599] packet dropped
+29/38 = 0.7631578947368421
+Probe packet received from  2222
+[1683158539.301188] packet dropped
+30/39 = 0.7692307692307693
+Probe packet received from  3333
+[1683158539.301215] packet dropped
+31/40 = 0.775
+Probe packet received from  2222
+[1683158539.3012722] packet dropped
+32/41 = 0.7804878048780488
+Probe packet received from  3333
+Probe packet received from  3333
+Probe packet received from  2222
+[1683158539.301362] packet dropped
+33/44 = 0.75
+Probe packet received from  3333
+[1683158539.3013911] packet dropped
+34/45 = 0.7555555555555555
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.301475] packet dropped
+35/47 = 0.7446808510638298
+Probe packet received from  3333
+[1683158539.3015108] packet dropped
+36/48 = 0.75
+Probe packet received from  3333
+[1683158539.301546] packet dropped
+37/49 = 0.7551020408163265
+Probe packet received from  3333
+[1683158539.301568] packet dropped
+38/50 = 0.76
+Probe packet received from  2222
+[1683158539.301601] packet dropped
+39/51 = 0.7647058823529411
+Probe packet received from  2222
+[1683158539.301623] packet dropped
+40/52 = 0.7692307692307693
+Probe packet received from  2222
+[1683158539.301645] packet dropped
+41/53 = 0.7735849056603774
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.301725] packet dropped
+42/55 = 0.7636363636363637
+Probe packet received from  2222
+[1683158539.301749] packet dropped
+43/56 = 0.7678571428571429
+Probe packet received from  2222
+[1683158539.3018] packet dropped
+44/57 = 0.7719298245614035
+Probe packet received from  2222
+[1683158539.301864] packet dropped
+45/58 = 0.7758620689655172
+Probe packet received from  3333
+Probe packet received from  2222
+[1683158539.301928] packet dropped
+46/60 = 0.7666666666666667
+Probe packet received from  3333
+Probe packet received from  3333
+Probe packet received from  2222
+[1683158539.302015] packet dropped
+47/63 = 0.746031746031746
+Probe packet received from  3333
+[1683158539.302042] packet dropped
+48/64 = 0.75
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.302098] packet dropped
+49/66 = 0.7424242424242424
+Probe packet received from  3333
+[1683158539.302125] packet dropped
+50/67 = 0.746268656716418
+Probe packet received from  3333
+[1683158539.302152] packet dropped
+51/68 = 0.75
+Probe packet received from  3333
+[1683158539.302248] packet dropped
+52/69 = 0.7536231884057971
+Probe packet received from  3333
+Probe packet received from  3333
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.3024518] packet dropped
+53/73 = 0.726027397260274
+Probe packet received from  3333
+[1683158539.302499] packet dropped
+54/74 = 0.7297297297297297
+Probe packet received from  3333
+Probe packet received from  3333
+[1683158539.302658] packet dropped
+55/76 = 0.7236842105263158
+Probe packet received from  3333
+[1683158539.302687] packet dropped
+56/77 = 0.7272727272727273
+Probe packet received from  3333
+[1683158539.3027468] packet dropped
+57/78 = 0.7307692307692307
+Probe packet received from  3333
+[1683158539.302783] packet dropped
+58/79 = 0.7341772151898734
+Probe packet received from  3333
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.302924] packet dropped
+59/83 = 0.7108433734939759
+Probe packet received from  2222
+[1683158539.3048372] packet dropped
+60/84 = 0.7142857142857143
+Probe packet received from  2222
+[1683158539.304895] packet dropped
+61/85 = 0.7176470588235294
+Probe packet received from  2222
+[1683158539.304929] packet dropped
+62/86 = 0.7209302325581395
+Probe packet received from  2222
+[1683158539.304961] packet dropped
+63/87 = 0.7241379310344828
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.305032] packet dropped
+64/89 = 0.7191011235955056
+Probe packet received from  2222
+[1683158539.3050659] packet dropped
+65/90 = 0.7222222222222222
+Probe packet received from  2222
+[1683158539.3051] packet dropped
+66/91 = 0.7252747252747253
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.305168] packet dropped
+67/93 = 0.7204301075268817
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.305233] packet dropped
+68/95 = 0.7157894736842105
+Probe packet received from  2222
+[1683158539.3052611] packet dropped
+69/96 = 0.71875
+Probe packet received from  2222
+[1683158539.305386] packet dropped
+70/97 = 0.7216494845360825
+Probe packet received from  2222
+[1683158539.305424] packet dropped
+71/98 = 0.7244897959183674
+Probe packet received from  2222
+[1683158539.3054578] packet dropped
+72/99 = 0.7272727272727273
+Probe packet received from  2222
+[1683158539.305491] packet dropped
+73/100 = 0.73
+Probe packet received from  2222
+[1683158539.305522] packet dropped
+74/101 = 0.7326732673267327
+Probe packet received from  2222
+[1683158539.305554] packet dropped
+75/102 = 0.7352941176470589
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.305621] packet dropped
+76/104 = 0.7307692307692307
+Probe packet received from  2222
+Probe packet received from  2222
+Probe packet received from  2222
+[1683158539.305716] packet dropped
+77/107 = 0.719626168224299
+Probe packet received from  2222
+[1683158539.3057458] packet dropped
+78/108 = 0.7222222222222222
+Probe packet received from  2222
+[1683158539.3057768] packet dropped
+79/109 = 0.7247706422018348
+Probe packet received from  2222
+[1683158539.305849] packet dropped
+80/110 = 0.7272727272727273

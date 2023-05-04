@@ -1,0 +1,186 @@
+﻿Node 1111
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 dvnode.py 1111 2222 .1 3333 .5
+Local port:  1111
+Neighbor ports:  {3333, 2222}
+Distance vector:  {2222: 0.1, 3333: 0.5}
+Last:  0
+[1683156848.6157482] Node 1111 Routing Table
+- (0.5) --> Node 3333
+- (0.1) --> Node 2222
+[1683156853.0416372] Message received at Node 1111 from Node 3333
+[1683156853.0417469] Node 1111 Routing Table
+- (0.5) --> Node 3333
+- (0.1) --> Node 2222
+- (1.0) --> Node 4444; Next hop --> Node 3333
+[1683156853.041801] Message sent from Node 1111 to Node 3333
+[1683156853.0418482] Message sent from Node 1111 to Node 2222
+[1683156853.0419352] Message received at Node 1111 from Node 2222
+[1683156853.0419788] Node 1111 Routing Table
+- (0.3) --> Node 3333; Next hop --> Node 2222
+- (0.1) --> Node 2222
+- (0.9) --> Node 4444; Next hop --> Node 2222
+[1683156853.042006] Message sent from Node 1111 to Node 3333
+[1683156853.04203] Message sent from Node 1111 to Node 2222
+[1683156853.042115] Message received at Node 1111 from Node 2222
+[1683156853.0421472] Node 1111 Routing Table
+- (0.3) --> Node 3333; Next hop --> Node 2222
+- (0.1) --> Node 2222
+- (0.8) --> Node 4444; Next hop --> Node 2222
+[1683156853.04217] Message sent from Node 1111 to Node 3333
+[1683156853.042196] Message sent from Node 1111 to Node 2222
+[1683156853.042263] Message received at Node 1111 from Node 3333
+[1683156853.042291] Node 1111 Routing Table
+- (0.3) --> Node 3333; Next hop --> Node 2222
+- (0.1) --> Node 2222
+- (0.8) --> Node 4444; Next hop --> Node 2222
+
+
+Node 2222
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 dvnode.py 2222 1111 .1 3333 .2 4444 .8
+Local port:  2222
+Neighbor ports:  {4444, 3333, 1111}
+Distance vector:  {1111: 0.1, 3333: 0.2, 4444: 0.8}
+Last:  0
+[1683156850.4834719] Node 2222 Routing Table
+- (0.8) --> Node 4444
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.041298] Message received at Node 2222 from Node 4444
+[1683156853.0413618] Node 2222 Routing Table
+- (0.8) --> Node 4444
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.0414279] Message sent from Node 2222 to Node 4444
+[1683156853.041475] Message sent from Node 2222 to Node 3333
+[1683156853.041505] Message sent from Node 2222 to Node 1111
+[1683156853.041638] Message received at Node 2222 from Node 3333
+[1683156853.0416892] Node 2222 Routing Table
+- (0.7) --> Node 4444; Next hop --> Node 3333
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.041718] Message sent from Node 2222 to Node 4444
+[1683156853.041746] Message sent from Node 2222 to Node 3333
+[1683156853.041782] Message sent from Node 2222 to Node 1111
+[1683156853.041991] Message received at Node 2222 from Node 1111
+[1683156853.042026] Node 2222 Routing Table
+- (0.7) --> Node 4444; Next hop --> Node 3333
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.0420978] Message received at Node 2222 from Node 3333
+[1683156853.042125] Node 2222 Routing Table
+- (0.7) --> Node 4444; Next hop --> Node 3333
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.042192] Message received at Node 2222 from Node 1111
+[1683156853.042218] Node 2222 Routing Table
+- (0.7) --> Node 4444; Next hop --> Node 3333
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.042283] Message received at Node 2222 from Node 4444
+[1683156853.042309] Node 2222 Routing Table
+- (0.7) --> Node 4444; Next hop --> Node 3333
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.042376] Message received at Node 2222 from Node 1111
+[1683156853.042403] Node 2222 Routing Table
+- (0.7) --> Node 4444; Next hop --> Node 3333
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+[1683156853.04247] Message received at Node 2222 from Node 4444
+[1683156853.042496] Node 2222 Routing Table
+- (0.7) --> Node 4444; Next hop --> Node 3333
+- (0.2) --> Node 3333
+- (0.1) --> Node 1111
+
+
+Node 3333
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 dvnode.py 3333 1111 .5 2222 .2 4444 .5
+Local port:  3333
+Neighbor ports:  {4444, 2222, 1111}
+Distance vector:  {1111: 0.5, 2222: 0.2, 4444: 0.5}
+Last:  0
+[1683156851.7754219] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.5) --> Node 1111
+[1683156853.041209] Message received at Node 3333 from Node 4444
+[1683156853.041273] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.5) --> Node 1111
+[1683156853.041305] Message sent from Node 3333 to Node 4444
+[1683156853.0413709] Message sent from Node 3333 to Node 2222
+[1683156853.041408] Message sent from Node 3333 to Node 1111
+[1683156853.0416498] Message received at Node 3333 from Node 2222
+[1683156853.041697] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+[1683156853.0417228] Message sent from Node 3333 to Node 4444
+[1683156853.0417778] Message sent from Node 3333 to Node 2222
+[1683156853.041901] Message sent from Node 3333 to Node 1111
+[1683156853.042044] Message received at Node 3333 from Node 2222
+[1683156853.042093] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+[1683156853.042165] Message received at Node 3333 from Node 1111
+[1683156853.042207] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+[1683156853.04229] Message received at Node 3333 from Node 4444
+[1683156853.042315] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+[1683156853.042377] Message received at Node 3333 from Node 1111
+[1683156853.042403] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+[1683156853.04247] Message received at Node 3333 from Node 1111
+[1683156853.042496] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+[1683156853.0425532] Message received at Node 3333 from Node 4444
+[1683156853.042571] Node 3333 Routing Table
+- (0.5) --> Node 4444
+- (0.2) --> Node 2222
+- (0.3) --> Node 1111; Next hop --> Node 2222
+
+
+Node 4444 (last)
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 dvnode.py 4444 2222 .8 3333 .5 last
+Local port:  4444
+Neighbor ports:  {3333, 2222}
+Distance vector:  {2222: 0.8, 3333: 0.5}
+Last:  1
+[1683156853.0406988] Node 4444 Routing Table
+- (0.5) --> Node 3333
+- (0.8) --> Node 2222
+[1683156853.040931] Message sent from Node 4444 to Node 3333
+[1683156853.0410619] Message sent from Node 4444 to Node 2222
+[1683156853.041918] Message received at Node 4444 from Node 2222
+[1683156853.041968] Node 4444 Routing Table
+- (0.5) --> Node 3333
+- (0.8) --> Node 2222
+- (0.9) --> Node 1111; Next hop --> Node 2222
+[1683156853.041997] Message sent from Node 4444 to Node 3333
+[1683156853.042043] Message sent from Node 4444 to Node 2222
+[1683156853.042141] Message received at Node 4444 from Node 3333
+[1683156853.042185] Node 4444 Routing Table
+- (0.5) --> Node 3333
+- (0.7) --> Node 2222; Next hop --> Node 3333
+- (0.8) --> Node 1111; Next hop --> Node 3333
+[1683156853.042214] Message sent from Node 4444 to Node 3333
+[1683156853.042258] Message sent from Node 4444 to Node 2222

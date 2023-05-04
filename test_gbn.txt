@@ -1,0 +1,493 @@
+﻿TEST 1: no dropping
+
+
+Sender
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 1111 2222 5 -p 0
+node> send me coffee
+[1683135571.003776] packet: 0 content: m sent
+[1683135571.00384] packet: 1 content: e sent
+[1683135571.003865] packet: 2 content:   sent
+[1683135571.0038888] packet: 3 content: c sent
+[1683135571.003911] packet: 4 content: o sent
+[1683135571.022541] ACK packet: 0 received, window moves to: 1
+[1683135571.022656] packet: 5 content: f sent
+[1683135571.041634] ACK packet: 1 received, window moves to: 2
+[1683135571.0416892] ACK packet: 2 received, window moves to: 3
+[1683135571.041743] ACK packet: 3 received, window moves to: 4
+[1683135571.041815] packet: 6 content: f sent
+[1683135571.041962] packet: 7 content: e sent
+[1683135571.042114] packet: 8 content: e sent
+node> [1683135571.057866] ACK packet: 4 received, window moves to: 5
+[1683135571.077354] ACK packet: 5 received, window moves to: 6
+[1683135571.0837781] ACK packet: 6 received, window moves to: 7
+[1683135571.090219] ACK packet: 7 received, window moves to: 8
+[1683135571.1105769] ACK packet: 8 received, window moves to: 9
+[Summary] 0/9 acks discarded, loss rate = 0.0%
+[1683135571.6150558] packet: 3 timeout, resend all packets in window: (3, 2)
+
+
+Receiver
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 2222 1111 5 -p 0
+node> [1683135571.009883] packet: 0 content: m received
+[1683135571.022441] ACK: 0 sent, expecting 1
+[1683135571.0287821] packet: 1 content: e received
+[1683135571.0412621] ACK: 1 sent, expecting 2
+[1683135571.041344] packet: 2 content:   received
+[1683135571.041409] ACK: 2 sent, expecting 3
+[1683135571.041443] packet: 3 content: c received
+[1683135571.046816] ACK: 3 sent, expecting 4
+[1683135571.057736] packet: 4 content: o received
+[1683135571.0635278] ACK: 4 sent, expecting 5
+[1683135571.076014] packet: 5 content: f received
+[1683135571.0761049] ACK: 5 sent, expecting 6
+[1683135571.083651] packet: 6 content: f received
+[1683135571.090003] ACK: 6 sent, expecting 7
+[1683135571.090086] packet: 7 content: e received
+[1683135571.097575] ACK: 7 sent, expecting 8
+[1683135571.110462] packet: 8 content: e received
+[1683135571.115705] ACK: 8 sent, expecting 9
+[Summary] 0/9 packets discarded, loss rate = 0.0%
+
+
+
+
+________________
+
+
+TEST 2: dropping acks deterministically
+
+
+Sender
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 1111 2222 5 -d 2
+node> send help
+[1683133668.027982] packet: 0 content: h sent
+[1683133668.0282292] packet: 1 content: e sent
+[1683133668.028278] packet: 2 content: l sent
+[1683133668.02833] packet: 3 content: p sent
+node> [1683133668.034293] ACK packet: 0 received, window moves to packet: 1
+[1683133668.0402088] ack: 1 dropped
+[1683133668.052791] ACK packet: 2 received, window moves to packet: 3
+[1683133668.064972] ack: 3 dropped
+[1683133668.5529768] packet: 3 timeout, resend all packets in window: (3, 3)
+[1683133668.553118] packet: 3 content: p REsent
+[1683133668.565939] ack: 3 dropped
+[1683133669.0573618] packet: 3 timeout, resend all packets in window: (3, 3)
+[1683133669.057473] packet: 3 content: p REsent
+[1683133669.0641768] ack: 3 dropped
+[1683133669.5593688] packet: 3 timeout, resend all packets in window: (3, 3)
+[1683133669.559464] packet: 3 content: p REsent
+… (continues forever)
+
+
+Receiver
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 2222 1111 5 -d 0
+node> [1683133668.034087] packet: 0 content: h received
+[1683133668.03994] ACK: 0 sent, expecting 1
+[1683133668.040017] packet: 1 content: e received
+[1683133668.0462809] ACK: 1 sent, expecting 2
+[1683133668.052695] packet: 2 content: l received
+[1683133668.059062] ACK: 2 sent, expecting 3
+[1683133668.059118] packet: 3 content: p received
+[1683133668.064928] ACK: 3 sent, expecting 4
+[1683133668.5595] packet: 3 content: p discarded
+[1683133668.565891] ACK: 3 sent, expecting 4
+[1683133669.063936] packet: 3 content: p discarded
+[1683133669.0640142] ACK: 3 sent, expecting 4
+[1683133669.565226] packet: 3 content: p discarded
+[1683133669.5652769] ACK: 3 sent, expecting 4
+[1683133670.0700521] packet: 3 content: p discarded
+[1683133670.076431] ACK: 3 sent, expecting 4
+… (continues forever)
+
+
+
+
+________________
+
+
+TEST 3: dropping packets deterministically
+
+
+Sender
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 1111 2222 5 -d 0
+node> send hello there
+[1683133932.565268] packet: 0 content: h sent
+[1683133932.565377] packet: 1 content: e sent
+[1683133932.5654058] packet: 2 content: l sent
+[1683133932.565428] packet: 3 content: l sent
+[1683133932.565446] packet: 4 content: o sent
+[1683133932.584447] ACK packet: 0 received, window moves to packet: 1
+[1683133932.584571] packet: 5 content:   sent
+[1683133932.612736] ACK packet: 0 discarded
+[1683133932.644908] ACK packet: 0 discarded
+[1683133933.091908] packet: 1 timeout, resend all packets in window: (1, -1)
+[1683133933.10464] packet: 1 content: e REsent
+[1683133933.117283] packet: 2 content: l REsent
+[1683133933.1240692] packet: 3 content: l REsent
+[1683133933.124141] packet: 4 content: o REsent
+[1683133933.124181] packet: 5 content:   REsent
+[1683133933.131052] ACK packet: 0 discarded
+[1683133933.143729] ACK packet: 0 discarded
+… (continues forever)
+
+
+Receiver
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 2222 1111 5 -d 2
+node> [1683133932.5724301] packet: 0 content: h received
+[1683133932.584393] ACK: 0 sent, expecting 1
+[1683133932.594922] packet: 1 content: e dropped
+[1683133932.600136] packet: 2 content: l discarded
+[1683133932.6127229] ACK: 0 sent, expecting 1
+[1683133932.618446] packet: 3 content: l dropped
+[1683133932.624779] packet: 4 content: o discarded
+[1683133932.631677] ACK: 0 sent, expecting 1
+[1683133932.6317189] packet: 5 content:   dropped
+[1683133933.1046689] packet: 1 content: e dropped
+[1683133933.1173341] packet: 2 content: l discarded
+[1683133933.124074] ACK: 0 sent, expecting 1
+[1683133933.124125] packet: 3 content: l dropped
+[1683133933.124152] packet: 4 content: o discarded
+[1683133933.1242309] ACK: 0 sent, expecting 1
+[1683133933.1242728] packet: 5 content:   dropped
+[1683133933.643787] packet: 1 content: e dropped
+[1683133933.659641] packet: 2 content: l discarded
+… (continues forever)
+________________
+TEST 4: dropping acks probabilistically
+
+
+Sender
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 1111 2222 5 -p 0.4
+node> send hello
+[1683135113.7772071] packet: 0 content: h sent
+[1683135113.777323] packet: 1 content: e sent
+[1683135113.777348] packet: 2 content: l sent
+[1683135113.777368] packet: 3 content: l sent
+[1683135113.777387] packet: 4 content: o sent
+node> [1683135113.7837389] ack: 0 dropped
+[1683135113.795826] ACK packet: 1 received, window moves to: 2
+[1683135113.802131] ack: 2 dropped
+[1683135113.8200371] ACK packet: 3 received, window moves to: 4
+[1683135113.825588] ack: 4 dropped
+[1683135114.324136] packet: 4 timeout, resend all packets in window: (4, 4)
+[1683135114.3242629] packet: 4 content: o REsent
+[1683135114.33038] ACK packet: 4 received, window moves to: 5
+[Summary] 3/6 acks discarded, loss rate = 0.5%
+
+
+
+
+Receiver
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 2222 1111 5 -p 0
+node> [1683135113.783623] packet: 0 content: h received
+[1683135113.789268] ACK: 0 sent, expecting 1
+[1683135113.795694] packet: 1 content: e received
+[1683135113.795753] ACK: 1 sent, expecting 2
+[1683135113.802061] packet: 2 content: l received
+[1683135113.807843] ACK: 2 sent, expecting 3
+[1683135113.814313] packet: 3 content: l received
+[1683135113.825404] ACK: 3 sent, expecting 4
+[1683135113.825471] packet: 4 content: o received
+[1683135113.8316932] ACK: 4 sent, expecting 5
+[Summary] 0/5 packets discarded, loss rate = 0.0%
+[1683135114.3302772] packet: 4 content: o discarded
+[1683135114.335546] ACK: 4 sent, expecting 5
+
+
+
+
+________________
+
+
+TEST 5: dropping packets probabilistically
+
+
+Sender
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 1111 2222 5 -p 0
+node> send welcome to detention
+[1683135328.284471] packet: 0 content: w sent
+[1683135328.284544] packet: 1 content: e sent
+[1683135328.28458] packet: 2 content: l sent
+[1683135328.284605] packet: 3 content: c sent
+[1683135328.284627] packet: 4 content: o sent
+[1683135328.3023849] ACK packet: 0 received, window moves to: 1
+[1683135328.3024929] packet: 5 content: m sent
+[1683135328.314178] ACK packet: 1 received, window moves to: 2
+[1683135328.314263] ACK packet: 2 received, window moves to: 3
+[1683135328.314343] ACK packet: 3 received, window moves to: 4
+[1683135328.31438] ACK packet: 4 received, window moves to: 5
+[1683135328.314411] packet: 6 content: e sent
+[1683135328.314451] packet: 7 content:   sent
+[1683135328.3145049] packet: 8 content: t sent
+[1683135328.314534] packet: 9 content: o sent
+[1683135328.3312042] ACK packet: 4 discarded
+[1683135328.355671] ACK packet: 4 discarded
+[1683135328.362544] ACK packet: 4 discarded
+[1683135328.824716] packet: 5 timeout, resend all packets in window: (5, 3)
+[1683135328.836739] packet: 5 content: m REsent
+[1683135328.836779] packet: 6 content: e REsent
+[1683135328.836916] packet: 7 content:   REsent
+[1683135328.83694] packet: 8 content: t REsent
+[1683135328.836959] packet: 9 content: o REsent
+[1683135328.843225] ACK packet: 5 received, window moves to: 6
+[1683135328.8433259] packet: 10 content:   sent
+[1683135328.8546188] ACK packet: 6 received, window moves to: 7
+[1683135328.8547058] packet: 11 content: d sent
+[1683135328.8794172] ACK packet: 7 received, window moves to: 8
+[1683135328.879542] packet: 12 content: e sent
+[1683135328.9063208] ACK packet: 7 discarded
+[1683135328.906371] ACK packet: 7 discarded
+[1683135328.9126499] ACK packet: 7 discarded
+[1683135328.9380748] ACK packet: 7 discarded
+[1683135329.386976] packet: 2 timeout, resend all packets in window: (2, 0)
+[1683135329.399286] packet: 8 content: t REsent
+[1683135329.399349] packet: 9 content: o REsent
+[1683135329.404913] packet: 10 content:   REsent
+[1683135329.405044] packet: 11 content: d REsent
+[1683135329.4050791] packet: 12 content: e REsent
+[1683135329.41268] ACK packet: 8 received, window moves to: 9
+[1683135329.412865] ACK packet: 9 received, window moves to: 10
+[1683135329.413035] packet: 13 content: t sent
+[1683135329.4130712] packet: 14 content: e sent
+[1683135329.4187038] ACK packet: 10 received, window moves to: 11
+[1683135329.418744] ACK packet: 11 received, window moves to: 12
+[1683135329.418766] ACK packet: 12 received, window moves to: 13
+[1683135329.418879] packet: 15 content: n sent
+[1683135329.4189079] packet: 16 content: t sent
+[1683135329.418934] packet: 17 content: i sent
+[1683135329.4359732] ACK packet: 12 discarded
+[1683135329.442683] ACK packet: 12 discarded
+[1683135329.454572] ACK packet: 12 discarded
+[1683135329.930136] packet: 1 timeout, resend all packets in window: (1, -1)
+[1683135329.9410582] packet: 13 content: t REsent
+[1683135329.941107] packet: 14 content: e REsent
+[1683135329.941206] packet: 15 content: n REsent
+[1683135329.941231] packet: 16 content: t REsent
+[1683135329.941362] packet: 17 content: i REsent
+[1683135329.947815] ACK packet: 13 received, window moves to: 14
+[1683135329.948079] ACK packet: 14 received, window moves to: 15
+[1683135329.9481118] ACK packet: 15 received, window moves to: 16
+[1683135329.9481332] ACK packet: 16 received, window moves to: 17
+[1683135329.948257] packet: 18 content: o sent
+[1683135329.9484081] packet: 19 content: n sent
+node> [1683135329.9545028] ACK packet: 16 discarded
+[1683135329.960831] ACK packet: 16 discarded
+[1683135330.452306] packet: 5 timeout, resend all packets in window: (5, 1)
+[1683135330.45243] packet: 17 content: i REsent
+[1683135330.4524758] packet: 18 content: o REsent
+[1683135330.452506] packet: 19 content: n REsent
+[1683135330.45907] ACK packet: 17 received, window moves to: 18
+[1683135330.465455] ACK packet: 18 received, window moves to: 19
+[1683135330.483378] ACK packet: 19 received, window moves to: 20
+[Summary] 0/32 acks discarded, loss rate = 0.0%
+[1683135330.986002] packet: 2 timeout, resend all packets in window: (2, 1)
+
+
+Receiver
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 2222 1111 5 -p 0.1
+node> [1683135328.290889] packet: 0 content: w received
+[1683135328.3023229] ACK: 0 sent, expecting 1
+[1683135328.30861] packet: 1 content: e received
+[1683135328.308645] ACK: 1 sent, expecting 2
+[1683135328.30867] packet: 2 content: l received
+[1683135328.308702] ACK: 2 sent, expecting 3
+[1683135328.308816] packet: 3 content: c received
+[1683135328.308866] ACK: 3 sent, expecting 4
+[1683135328.308944] packet: 4 content: o received
+[1683135328.3090072] ACK: 4 sent, expecting 5
+[1683135328.3090382] packet: 5 content: m dropped
+[1683135328.319594] packet: 6 content: e discarded
+[1683135328.3315241] ACK: 4 sent, expecting 5
+[1683135328.3420842] packet: 7 content:   discarded
+[1683135328.355602] ACK: 4 sent, expecting 5
+[1683135328.355744] packet: 8 content: t discarded
+[1683135328.355791] ACK: 4 sent, expecting 5
+[1683135328.355856] packet: 9 content: o dropped
+[1683135328.83653] packet: 5 content: m received
+[1683135328.836579] ACK: 5 sent, expecting 6
+[1683135328.8432178] packet: 6 content: e received
+[1683135328.8545768] ACK: 6 sent, expecting 7
+[1683135328.867955] packet: 7 content:   received
+[1683135328.879358] ACK: 7 sent, expecting 8
+[1683135328.891718] packet: 8 content: t dropped
+[1683135328.898709] packet: 9 content: o discarded
+[1683135328.8987808] ACK: 7 sent, expecting 8
+[1683135328.9062872] packet: 10 content:   discarded
+[1683135328.906328] ACK: 7 sent, expecting 8
+[1683135328.906354] packet: 11 content: d discarded
+[1683135328.912617] ACK: 7 sent, expecting 8
+[1683135328.924775] packet: 12 content: e discarded
+[1683135328.938025] ACK: 7 sent, expecting 8
+[1683135329.399353] packet: 8 content: t received
+[1683135329.4048982] ACK: 8 sent, expecting 9
+[1683135329.404962] packet: 9 content: o received
+[1683135329.405004] ACK: 9 sent, expecting 10
+[1683135329.4050272] packet: 10 content:   received
+[1683135329.405053] ACK: 10 sent, expecting 11
+[1683135329.40518] packet: 11 content: d received
+[1683135329.4052129] ACK: 11 sent, expecting 12
+[1683135329.405241] packet: 12 content: e received
+[1683135329.405264] ACK: 12 sent, expecting 13
+[1683135329.418659] packet: 13 content: t dropped
+[1683135329.4239202] packet: 14 content: e discarded
+[1683135329.429588] ACK: 12 sent, expecting 13
+[1683135329.4362812] packet: 15 content: n dropped
+[1683135329.436309] packet: 16 content: t discarded
+[1683135329.436348] ACK: 12 sent, expecting 13
+[1683135329.436368] packet: 17 content: i discarded
+[1683135329.436398] ACK: 12 sent, expecting 13
+[1683135329.941065] packet: 13 content: t received
+[1683135329.941107] ACK: 13 sent, expecting 14
+[1683135329.941136] packet: 14 content: e received
+[1683135329.9411578] ACK: 14 sent, expecting 15
+[1683135329.9478242] packet: 15 content: n received
+[1683135329.947901] ACK: 15 sent, expecting 16
+[1683135329.94793] packet: 16 content: t received
+[1683135329.947986] ACK: 16 sent, expecting 17
+[1683135329.948012] packet: 17 content: i dropped
+[1683135329.954411] packet: 18 content: o discarded
+[1683135329.954458] ACK: 16 sent, expecting 17
+[1683135329.960761] packet: 19 content: n discarded
+[1683135329.966281] ACK: 16 sent, expecting 17
+[1683135330.458957] packet: 17 content: i received
+[1683135330.46534] ACK: 17 sent, expecting 18
+[1683135330.4653828] packet: 18 content: o received
+[1683135330.470619] ACK: 18 sent, expecting 19
+[1683135330.4832482] packet: 19 content: n received
+[1683135330.489491] ACK: 19 sent, expecting 20
+[Summary] 6/38 packets discarded, loss rate = 0.15789473684210525%
+________________
+
+
+TEST 6: dropping acks & packets probabilistically
+
+
+Sender
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 1111 2222 5 -p 0.1
+node> send mepickles to devour
+[1683135489.034834] packet: 0 content: m sent
+[1683135489.0348952] packet: 1 content: e sent
+[1683135489.034921] packet: 2 content: p sent
+[1683135489.034952] packet: 3 content: i sent
+[1683135489.034975] packet: 4 content: c sent
+[1683135489.053138] ACK packet: 0 received, window moves to: 1
+[1683135489.053271] packet: 5 content: k sent
+[1683135489.078128] ACK packet: 1 received, window moves to: 2
+[1683135489.0784252] packet: 6 content: l sent
+[1683135489.1021771] ACK packet: 2 received, window moves to: 3
+[1683135489.102238] packet: 7 content: e sent
+[1683135489.1238651] ACK packet: 3 received, window moves to: 4
+[1683135489.124031] packet: 8 content: s sent
+[1683135489.147985] ACK packet: 3 discarded
+[1683135489.172975] ACK packet: 3 discarded
+[1683135489.1920671] ACK packet: 3 discarded
+[1683135489.2087739] ACK packet: 3 discarded
+[1683135489.6351218] packet: 4 timeout, resend all packets in window: (4, 2)
+[1683135489.647648] packet: 4 content: c REsent
+[1683135489.647697] packet: 5 content: k REsent
+[1683135489.647725] packet: 6 content: l REsent
+[1683135489.647744] packet: 7 content: e REsent
+[1683135489.6477618] packet: 8 content: s REsent
+[1683135489.6539268] ACK packet: 4 received, window moves to: 5
+[1683135489.654023] packet: 9 content:   sent
+[1683135489.6604722] ACK packet: 5 received, window moves to: 6
+[1683135489.660543] packet: 10 content: t sent
+[1683135489.686145] ACK packet: 6 received, window moves to: 7
+[1683135489.686285] packet: 11 content: o sent
+[1683135489.692574] ACK packet: 7 received, window moves to: 8
+[1683135489.692839] ACK packet: 8 received, window moves to: 9
+[1683135489.692905] packet: 12 content:   sent
+[1683135489.693196] ack: 9 dropped
+[1683135489.693281] packet: 13 content: d sent
+[1683135489.6991801] ack: 10 dropped
+[1683135489.704567] ACK packet: 11 received, window moves to: 12
+[1683135489.704662] ACK packet: 12 received, window moves to: 13
+[1683135489.7046778] packet: 14 content: e sent
+[1683135489.704767] packet: 15 content: v sent
+[1683135489.704789] packet: 16 content: o sent
+[1683135489.70481] packet: 17 content: u sent
+[1683135489.734947] ack: 13 dropped
+[1683135489.759407] ACK packet: 14 received, window moves to: 15
+[1683135489.759448] ACK packet: 15 received, window moves to: 16
+[1683135489.759474] ACK packet: 16 received, window moves to: 17
+[1683135489.759496] ACK packet: 17 received, window moves to: 18
+[1683135489.7607] packet: 18 content: r sent
+node> [1683135489.773469] ACK packet: 18 received, window moves to: 19
+[Summary] 3/23 acks discarded, loss rate = 0.13043478260869565%
+[1683135490.273673] packet: 1 timeout, resend all packets in window: (1, 0)
+
+
+
+
+Receiver
+
+
+(base) Ayshas-MBP:Network-Protocols-Emulation ayshajamal$ python3 gbnnode.py 2222 1111 5 -p 0.1
+node> [1683135489.0405009] packet: 0 content: m received
+[1683135489.053091] ACK: 0 sent, expecting 1
+[1683135489.065637] packet: 1 content: e received
+[1683135489.078083] ACK: 1 sent, expecting 2
+[1683135489.0898619] packet: 2 content: p received
+[1683135489.10213] ACK: 2 sent, expecting 3
+[1683135489.1084669] packet: 3 content: i received
+[1683135489.117622] ACK: 3 sent, expecting 4
+[1683135489.123816] packet: 4 content: c dropped
+[1683135489.1353788] packet: 5 content: k discarded
+[1683135489.147966] ACK: 3 sent, expecting 4
+[1683135489.1596842] packet: 6 content: l discarded
+[1683135489.1669052] ACK: 3 sent, expecting 4
+[1683135489.179285] packet: 7 content: e discarded
+[1683135489.191499] ACK: 3 sent, expecting 4
+[1683135489.2030988] packet: 8 content: s discarded
+[1683135489.203168] ACK: 3 sent, expecting 4
+[1683135489.647701] packet: 4 content: c received
+[1683135489.647906] ACK: 4 sent, expecting 5
+[1683135489.6540291] packet: 5 content: k received
+[1683135489.660285] ACK: 5 sent, expecting 6
+[1683135489.6740348] packet: 6 content: l received
+[1683135489.686152] ACK: 6 sent, expecting 7
+[1683135489.6862059] packet: 7 content: e received
+[1683135489.6862469] ACK: 7 sent, expecting 8
+[1683135489.6862888] packet: 8 content: s received
+[1683135489.6863139] ACK: 8 sent, expecting 9
+[1683135489.686334] packet: 9 content:   received
+[1683135489.686351] ACK: 9 sent, expecting 10
+[1683135489.686368] packet: 10 content: t received
+[1683135489.6863842] ACK: 10 sent, expecting 11
+[1683135489.6864] packet: 11 content: o received
+[1683135489.686416] ACK: 11 sent, expecting 12
+[1683135489.6991758] packet: 12 content:   received
+[1683135489.7108748] ACK: 12 sent, expecting 13
+[1683135489.723972] packet: 13 content: d received
+[1683135489.734951] ACK: 13 sent, expecting 14
+[1683135489.747426] packet: 14 content: e received
+[1683135489.759153] ACK: 14 sent, expecting 15
+[1683135489.759215] packet: 15 content: v received
+[1683135489.759257] ACK: 15 sent, expecting 16
+[1683135489.759284] packet: 16 content: o received
+[1683135489.75931] ACK: 16 sent, expecting 17
+[1683135489.7593338] packet: 17 content: u received
+[1683135489.759358] ACK: 17 sent, expecting 18
+[1683135489.76704] packet: 18 content: r received
+[1683135489.773418] ACK: 18 sent, expecting 19
+[Summary] 1/24 packets discarded, loss rate = 0.041666666666666664%
