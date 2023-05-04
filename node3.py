@@ -66,7 +66,7 @@ class CnnNode:
 
 
             split_msg = buffer.split('\n')
-            print(split_msg)
+            # print(split_msg)
             sender_port = int(split_msg[0])
 
             # Probe packet
@@ -79,7 +79,7 @@ class CnnNode:
                 if(random_num <= self.routing_table[sender_port][0]): # probabilistic
                     print(("[{}] packet dropped").format(time.time()))
                     self.dropped_count += 1
-                    print((random_num, self.routing_table[sender_port][0]))
+                    # print((random_num, self.routing_table[sender_port][0]))
                     print(("{}/{} = {}").format(self.dropped_count, self.packets_received, (self.dropped_count/self.packets_received)))
                 else: # send ack
                     node_listen_socket.sendto(str(str(self.local_port)+"\nack").encode(), (IP, sender_port))
@@ -94,7 +94,7 @@ class CnnNode:
             print("Message: ", dv_res)
 
             old_dv = copy.deepcopy(self.dv)
-            print("OLD DV: ", old_dv)
+            # print("OLD DV: ", old_dv)
 
             # Populate routing table
             for node in dv_res:
@@ -102,7 +102,7 @@ class CnnNode:
                     lock.acquire()
                     current_dist = self.dv[node]
                     candidate_dist = round(self.dv[sender_port] + dv_res[node], 1)
-                    print(node, " >> Node is already in table. ", "current: ", current_dist, ' vs ', "candidate; ", candidate_dist )
+                    # print(node, " >> Node is already in table. ", "current: ", current_dist, ' vs ', "candidate; ", candidate_dist )
                     if(candidate_dist < current_dist):
                         self.dv[node] = candidate_dist
 
@@ -120,41 +120,34 @@ class CnnNode:
                     lock.release()
                 elif(node != self.local_port and node not in self.routing_table.keys()):
                     lock.acquire()
-                    print("Neighbor ports: ", self.neighbor_ports)
-                    print(node, " >> Need to add new reachable node: ", node)
+                    # print("Neighbor ports: ", self.neighbor_ports)
+                    # print(node, " >> Need to add new reachable node: ", node)
                     self.dv[node] = round(self.dv[sender_port] + dv_res[node], 1)
                     self.routing_table[node] = (round(self.dv[sender_port] + dv_res[node], 1), sender_port)
                     lock.release()
-                else:
-                    print(node, " >> This is the local port.")
+                # else:
+                #     print(node, " >> This is the local port.")
             
             self.print_routing_table()
 
-            print("OLD DV: ", old_dv)
-            print("CURRENT DV: ", self.dv)
+            # print("OLD DV: ", old_dv)
+            # print("CURRENT DV: ", self.dv)
 
             # Only forward dv if this node has never forwarded before
             # or if there is a change in the distance vector
             if(self.forward_count == 0):
-                print("First time forwarding")
+                # print("First time forwarding")
                 # Forward distance vector to neighbors
                 self.forward_count += 1
                 for neighbor in self.neighbor_ports:
                     print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
                     node_listen_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
             elif(self.dv != old_dv):
-                print("Distance vector has changed")
+                # print("Distance vector has changed")
                 self.forward_count += 1
                 for neighbor in self.neighbor_ports:
                     print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
                     node_listen_socket.sendto(str(str(self.local_port)+'\n'+str(self.dv)).encode(), (IP, neighbor))
-            else:
-                print("Distance vector has not changed")
-                print(old_dv)
-                print(self.dv)
-
-                print('\nFinal routing table')
-                self.print_routing_table()
 
             # Probing: send messages to nodes in send_probes
             for node in self.send_probes:
@@ -174,7 +167,7 @@ class CnnNode:
         listen.start()
 
         if(self.last == 1):
-            print("Sending dv to neighbors")
+            # print("Sending dv to neighbors")
             self.forward_count += 1
             for neighbor in self.neighbor_ports:
                 print(("[{}] Message sent from Node {} to Node {}").format(time.time(), self.local_port, neighbor))
